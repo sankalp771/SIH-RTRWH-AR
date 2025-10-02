@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Route, Switch } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +8,8 @@ import Header from "@/components/Header";
 import LandingPage from "@/components/LandingPage";
 import UserInputForm from "@/components/UserInputForm";
 import ResultsDisplay from "@/components/ResultsDisplay";
+import EducationPage from "@/pages/EducationPage";
+import ContractorsPage from "@/pages/ContractorsPage";
 import jsPDF from 'jspdf';
 
 type AppState = 'landing' | 'form' | 'results';
@@ -272,27 +275,39 @@ function App() {
           <Header />
           
           <main>
-            {currentState === 'landing' && (
-              <LandingPage onSelectPath={handleSelectPath} />
-            )}
-            
-            {currentState === 'form' && calculationType && (
-              <UserInputForm
-                type={calculationType}
-                onSubmit={handleFormSubmit}
-                onBack={handleBackToLanding}
-              />
-            )}
-            
-            {currentState === 'results' && calculationType && calculationResults && formData && (
-              <ResultsDisplay
-                type={calculationType}
-                results={calculationResults}
-                userInputs={formData}
-                onBack={handleBackToForm}
-                onDownloadPDF={handleDownloadPDF}
-              />
-            )}
+            <Switch>
+              <Route path="/education">
+                <EducationPage />
+              </Route>
+              
+              <Route path="/contractors">
+                <ContractorsPage />
+              </Route>
+              
+              <Route path="/">
+                {currentState === 'landing' && (
+                  <LandingPage onSelectPath={handleSelectPath} />
+                )}
+                
+                {currentState === 'form' && calculationType && (
+                  <UserInputForm
+                    type={calculationType}
+                    onSubmit={handleFormSubmit}
+                    onBack={handleBackToLanding}
+                  />
+                )}
+                
+                {currentState === 'results' && calculationType && calculationResults && formData && (
+                  <ResultsDisplay
+                    type={calculationType}
+                    results={calculationResults}
+                    userInputs={formData}
+                    onBack={handleBackToForm}
+                    onDownloadPDF={handleDownloadPDF}
+                  />
+                )}
+              </Route>
+            </Switch>
           </main>
           
           <Toaster />

@@ -12,7 +12,7 @@ import { scrollToSection, type SectionId } from "@/lib/navigation";
 
 export default function Header() {
   const [isDark, setIsDark] = useState(false);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState('English');
 
@@ -36,7 +36,12 @@ export default function Header() {
   }, []);
 
   const handleSectionScroll = (sectionId: SectionId) => {
-    scrollToSection(sectionId);
+    if (location !== '/') {
+      setLocation('/');
+      setTimeout(() => scrollToSection(sectionId), 100);
+    } else {
+      scrollToSection(sectionId);
+    }
     setIsMobileMenuOpen(false);
   };
 
@@ -59,14 +64,15 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center gap-1">
-              <Button
-                variant={location === '/' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => handleSectionScroll('hero')}
-                data-testid="button-home"
-              >
-                Home
-              </Button>
+              <Link href="/">
+                <Button
+                  variant={location === '/' ? 'default' : 'ghost'}
+                  size="sm"
+                  data-testid="button-home"
+                >
+                  Home
+                </Button>
+              </Link>
               
               {/* Calculator Dropdown */}
               <DropdownMenu>
@@ -94,14 +100,25 @@ export default function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleSectionScroll('about')}
-                data-testid="button-about"
-              >
-                About
-              </Button>
+              <Link href="/education">
+                <Button
+                  variant={location === '/education' ? 'default' : 'ghost'}
+                  size="sm"
+                  data-testid="button-education"
+                >
+                  Education
+                </Button>
+              </Link>
+
+              <Link href="/contractors">
+                <Button
+                  variant={location === '/contractors' ? 'default' : 'ghost'}
+                  size="sm"
+                  data-testid="button-contractors"
+                >
+                  Contractors
+                </Button>
+              </Link>
               
               <Button
                 variant="ghost"
@@ -167,13 +184,15 @@ export default function Header() {
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t bg-background/95 backdrop-blur-sm">
             <nav className="container mx-auto px-4 py-4 space-y-2">
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => handleSectionScroll('hero')}
-              >
-                Home
-              </Button>
+              <Link href="/">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Home
+                </Button>
+              </Link>
               
               <div className="space-y-1">
                 <p className="text-sm font-medium px-4 py-2 text-muted-foreground">Calculator</p>
@@ -194,14 +213,26 @@ export default function Header() {
                   Artificial Recharge
                 </Button>
               </div>
-              
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => handleSectionScroll('about')}
-              >
-                About
-              </Button>
+
+              <Link href="/education">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Education
+                </Button>
+              </Link>
+
+              <Link href="/contractors">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Contractors
+                </Button>
+              </Link>
               
               <Button
                 variant="ghost"
