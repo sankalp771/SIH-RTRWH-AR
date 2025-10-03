@@ -1,9 +1,11 @@
+import { useTranslation } from "react-i18next";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, CheckCircle, Award, Users, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
 export default function AboutSection() {
+  const { t } = useTranslation();
   const [showFullMethodology, setShowFullMethodology] = useState(false);
   return (
     <section id="about" className="py-24 bg-muted/30">
@@ -11,10 +13,10 @@ export default function AboutSection() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            Built for Indian Conditions
+            {t('about.title')}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Our advanced calculations follow CGWB guidelines and incorporate real Indian rainfall patterns, ensuring accurate results for every region.
+            {t('about.subtitle')}
           </p>
         </div>
 
@@ -23,12 +25,10 @@ export default function AboutSection() {
           {/* Left: Content */}
           <div className="space-y-6">
             <h3 className="text-2xl font-semibold mb-4">
-              Scientific Methodology Meets Local Expertise
+              {t('about.heading')}
             </h3>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Our tool combines Central Ground Water Board (CGWB) guidelines with region-specific rainfall data, 
-              soil characteristics, and groundwater conditions. Every calculation is tailored to Indian climate 
-              patterns, making it the most accurate rainwater harvesting assistant for Indian homes and communities.
+              {t('about.description')}
             </p>
             
             {showFullMethodology && (
@@ -57,19 +57,19 @@ export default function AboutSection() {
             <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="font-medium">CGWB Compliant</span>
+                <span className="font-medium">{t('about.features.cgwbCompliant')}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Award className="w-5 h-5 text-blue-500" />
-                <span className="font-medium">Scientific Methods</span>
+                <span className="font-medium">{t('about.features.scientificMethods')}</span>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-red-500" />
-                <span className="font-medium">Location Specific</span>
+                <span className="font-medium">{t('about.features.locationSpecific')}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Users className="w-5 h-5 text-purple-500" />
-                <span className="font-medium">Community Focused</span>
+                <span className="font-medium">{t('about.features.communityFocused')}</span>
               </div>
             </div>
 
@@ -82,12 +82,12 @@ export default function AboutSection() {
               {showFullMethodology ? (
                 <>
                   <ChevronUp className="w-4 h-4 mr-2" />
-                  Read Less
+                  {t('about.readLess')}
                 </>
               ) : (
                 <>
                   <ChevronDown className="w-4 h-4 mr-2" />
-                  Read More About Our Methodology
+                  {t('about.readMore')}
                 </>
               )}
             </Button>

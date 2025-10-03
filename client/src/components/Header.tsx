@@ -1,5 +1,6 @@
 import { Droplets, Menu, Moon, Sun, ChevronDown, Calculator, Globe, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,10 +12,10 @@ import { Link, useLocation } from "wouter";
 import { scrollToSection, type SectionId } from "@/lib/navigation";
 
 export default function Header() {
+  const { t, i18n } = useTranslation();
   const [isDark, setIsDark] = useState(false);
   const [location, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState('English');
 
   useEffect(() => {
     const isDarkMode = document.documentElement.classList.contains('dark');
@@ -55,8 +56,8 @@ export default function Header() {
                 <Droplets className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="font-semibold text-lg">RTRWH/AR</h1>
-                <p className="text-xs text-muted-foreground">Rainwater Assistant</p>
+                <h1 className="font-semibold text-lg">{t('brand.name')}</h1>
+                <p className="text-xs text-muted-foreground">{t('brand.tagline')}</p>
               </div>
             </div>
           </Link>
@@ -70,7 +71,7 @@ export default function Header() {
                   size="sm"
                   data-testid="button-home"
                 >
-                  Home
+                  {t('nav.home')}
                 </Button>
               </Link>
               
@@ -84,18 +85,18 @@ export default function Header() {
                     data-testid="button-calculator-dropdown"
                   >
                     <Calculator className="w-4 h-4" />
-                    Calculator
+                    {t('nav.calculator')}
                     <ChevronDown className="w-3 h-3" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem onClick={() => handleSectionScroll('calculator')}>
                     <Droplets className="w-4 h-4 mr-2" />
-                    Rainwater Harvesting
+                    {t('features.rainwaterTitle')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleSectionScroll('calculator')}>
                     <Calculator className="w-4 h-4 mr-2" />
-                    Artificial Recharge
+                    {t('features.rechargeTitle')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -106,7 +107,7 @@ export default function Header() {
                   size="sm"
                   data-testid="button-education"
                 >
-                  Education
+                  {t('nav.education')}
                 </Button>
               </Link>
 
@@ -116,7 +117,7 @@ export default function Header() {
                   size="sm"
                   data-testid="button-contractors"
                 >
-                  Contractors
+                  {t('nav.contractors')}
                 </Button>
               </Link>
               
@@ -126,7 +127,7 @@ export default function Header() {
                 onClick={() => handleSectionScroll('testimonials')}
                 data-testid="button-testimonials"
               >
-                Testimonials
+                {t('nav.testimonials')}
               </Button>
             </nav>
 
@@ -140,19 +141,19 @@ export default function Header() {
                   data-testid="button-language"
                 >
                   <Globe className="w-4 h-4" />
-                  {currentLanguage}
+                  {t('nav.language')}
                   <ChevronDown className="w-3 h-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setCurrentLanguage('English')}>
+                <DropdownMenuItem onClick={() => i18n.changeLanguage('en')}>
                   English
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCurrentLanguage('हिंदी')}>
+                <DropdownMenuItem onClick={() => i18n.changeLanguage('hi')}>
                   हिंदी (Hindi)
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCurrentLanguage('Regional')}>
-                  Regional
+                <DropdownMenuItem onClick={() => i18n.changeLanguage('mr')}>
+                  मराठी (Marathi)
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -190,19 +191,19 @@ export default function Header() {
                   className="w-full justify-start"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Home
+                  {t('nav.home')}
                 </Button>
               </Link>
               
               <div className="space-y-1">
-                <p className="text-sm font-medium px-4 py-2 text-muted-foreground">Calculator</p>
+                <p className="text-sm font-medium px-4 py-2 text-muted-foreground">{t('nav.calculator')}</p>
                 <Button
                   variant="ghost"
                   className="w-full justify-start pl-8"
                   onClick={() => handleSectionScroll('calculator')}
                 >
                   <Droplets className="w-4 h-4 mr-2" />
-                  Rainwater Harvesting
+                  {t('features.rainwaterTitle')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -210,7 +211,7 @@ export default function Header() {
                   onClick={() => handleSectionScroll('calculator')}
                 >
                   <Calculator className="w-4 h-4 mr-2" />
-                  Artificial Recharge
+                  {t('features.rechargeTitle')}
                 </Button>
               </div>
 
@@ -220,7 +221,7 @@ export default function Header() {
                   className="w-full justify-start"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Education
+                  {t('nav.education')}
                 </Button>
               </Link>
 
@@ -230,7 +231,7 @@ export default function Header() {
                   className="w-full justify-start"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  Contractors
+                  {t('nav.contractors')}
                 </Button>
               </Link>
               
@@ -239,29 +240,29 @@ export default function Header() {
                 className="w-full justify-start"
                 onClick={() => handleSectionScroll('testimonials')}
               >
-                Testimonials
+                {t('nav.testimonials')}
               </Button>
               
               <div className="pt-2 border-t">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Language</span>
+                  <span className="text-sm text-muted-foreground">{t('nav.language')}</span>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm" className="gap-1">
                         <Globe className="w-4 h-4" />
-                        {currentLanguage}
+                        {t('nav.language')}
                         <ChevronDown className="w-3 h-3" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setCurrentLanguage('English')}>
+                      <DropdownMenuItem onClick={() => i18n.changeLanguage('en')}>
                         English
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setCurrentLanguage('हिंदी')}>
+                      <DropdownMenuItem onClick={() => i18n.changeLanguage('hi')}>
                         हिंदी (Hindi)
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setCurrentLanguage('Regional')}>
-                        Regional
+                      <DropdownMenuItem onClick={() => i18n.changeLanguage('mr')}>
+                        मराठी (Marathi)
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

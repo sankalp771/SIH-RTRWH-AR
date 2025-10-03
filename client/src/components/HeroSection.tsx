@@ -1,4 +1,5 @@
 import { ArrowRight, Droplets, Sprout, BarChart3, IndianRupee, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { scrollToSection, type CalculationType } from "@/lib/navigation";
@@ -8,6 +9,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onSelectPath }: HeroSectionProps) {
+  const { t } = useTranslation();
   const handlePathSelect = (path: CalculationType) => {
     console.log(`Selected path: ${path}`);
     onSelectPath(path);
@@ -23,10 +25,10 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
         {/* Enhanced Hero Content */}
         <div className="text-center max-w-5xl mx-auto mb-16">
           <h1 className="text-4xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-chart-1 to-chart-2 bg-clip-text text-transparent leading-tight">
-            Smart Rainwater Harvesting for Every Indian Home
+            {t('hero.title')}
           </h1>
           <p className="text-xl md:text-3xl text-muted-foreground mb-12 leading-relaxed font-medium">
-            Government-compliant, data-driven, and simple to use.
+            {t('hero.subtitle')}
           </p>
           
           {/* Hero CTAs */}
@@ -36,7 +38,7 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
               className="px-8 py-6 text-lg font-semibold hover:scale-105 transition-transform"
               onClick={() => scrollToSection('calculator')}
             >
-              Start Calculator
+              {t('hero.startCalculator')}
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             <Button
@@ -45,7 +47,7 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
               className="px-8 py-6 text-lg font-semibold hover:scale-105 transition-transform"
               onClick={() => scrollToSection('about')}
             >
-              Learn More
+              {t('hero.learnMore')}
             </Button>
           </div>
         </div>
@@ -57,12 +59,12 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
               <div className="w-16 h-16 bg-chart-1 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Droplets className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Rainwater Harvesting</h3>
+              <h3 className="text-2xl font-semibold mb-4">{t('features.rainwaterTitle')}</h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
-                Calculate rainwater collection potential, storage tank sizing, and cost analysis for your rooftop area.
+                {t('features.rainwaterDesc')}
               </p>
               <Button className="w-full group-hover:bg-chart-1" size="lg" data-testid="button-rainwater">
-                Start Rainwater Analysis
+                {t('calculator.rainwater')}
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -73,12 +75,12 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
               <div className="w-16 h-16 bg-chart-2 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Sprout className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Artificial Recharge</h3>
+              <h3 className="text-2xl font-semibold mb-4">{t('features.rechargeTitle')}</h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
-                Design groundwater recharge systems with pit dimensions, infiltration rates, and feasibility analysis.
+                {t('features.rechargeDesc')}
               </p>
               <Button className="w-full group-hover:bg-chart-2" size="lg" data-testid="button-recharge">
-                Start Recharge Analysis
+                {t('calculator.recharge')}
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>

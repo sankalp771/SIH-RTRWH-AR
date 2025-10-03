@@ -1,0 +1,151 @@
+{
+  "brand": {
+    "name": "RTRWH/AR",
+    "tagline": "Rainwater Assistant"
+  },
+  "nav": {
+    "home": "Home",
+    "calculator": "Calculator",
+    "education": "Education",
+    "contractors": "Contractors",
+    "testimonials": "Testimonials",
+    "language": "English"
+  },
+  "hero": {
+    "title": "Smart Rainwater Harvesting for Every Indian Home",
+    "subtitle": "Government-compliant, data-driven, and simple to use.",
+    "startCalculator": "Start Calculator",
+    "learnMore": "Learn More"
+  },
+  "features": {
+    "rainwaterTitle": "Rainwater Harvesting",
+    "rainwaterDesc": "Calculate potential, design storage systems, and optimize water collection for your home",
+    "rechargeTitle": "Artificial Recharge",
+    "rechargeDesc": "Assess groundwater recharge feasibility and design appropriate recharge structures"
+  },
+  "calculator": {
+    "title": "Select Calculation Type",
+    "rainwater": "Rainwater Harvesting",
+    "recharge": "Artificial Recharge",
+    "continue": "Continue"
+  },
+  "form": {
+    "personalInfo": "Personal Information",
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "location": "Location/City",
+    "locationPlaceholder": "Enter your city",
+    "pincode": "Pincode",
+    "pincodePlaceholder": "Enter 6-digit pincode",
+    "roofDetails": "Roof Details",
+    "roofArea": "Roof Area (sq.m)",
+    "roofAreaPlaceholder": "Enter roof area",
+    "roofType": "Roof Type",
+    "selectRoofType": "Select roof type",
+    "rcc": "RCC (Concrete)",
+    "gi": "GI Sheet",
+    "asbestos": "Asbestos",
+    "tiles": "Tiles",
+    "environment": "Environment Type",
+    "selectEnvironment": "Select environment",
+    "residential": "Residential",
+    "industrial": "Industrial",
+    "agricultural": "Agricultural",
+    "birdNesting": "Bird Nesting Present",
+    "waterRequirements": "Water Requirements",
+    "dwellers": "Number of Dwellers",
+    "dwellersPlaceholder": "Enter number of people",
+    "purpose": "Water Usage Purpose",
+    "selectPurpose": "Select purpose",
+    "domestic": "Domestic",
+    "irrigation": "Irrigation",
+    "groundwaterInfo": "Groundwater Information",
+    "hasOpenSpace": "Open Space Available",
+    "openSpaceArea": "Open Space Area (sq.m)",
+    "openSpaceAreaPlaceholder": "Enter open space area",
+    "groundwaterDepth": "Groundwater Depth (m)",
+    "groundwaterDepthPlaceholder": "Enter depth in meters",
+    "soilType": "Soil Type",
+    "selectSoilType": "Select soil type",
+    "sandy": "Sandy",
+    "loamy": "Loamy",
+    "clayey": "Clayey",
+    "budget": "Budget Range",
+    "selectBudget": "Select budget",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "submit": "Calculate Results",
+    "back": "Back"
+  },
+  "results": {
+    "title": "Calculation Results",
+    "feasibility": "Feasibility",
+    "feasibilityHigh": "High Feasibility",
+    "feasibilityMedium": "Medium Feasibility",
+    "feasibilityLow": "Low Feasibility",
+    "rainwaterPotential": "Rainwater Potential",
+    "annualPotential": "Annual Potential",
+    "litersPerYear": "liters/year",
+    "monthlyDistribution": "Monthly Distribution",
+    "storageSystem": "Storage System",
+    "tankCapacity": "Tank Capacity",
+    "liters": "liters",
+    "dimensions": "Dimensions",
+    "diameter": "Diameter",
+    "height": "Height",
+    "meters": "meters",
+    "costAnalysis": "Cost Analysis",
+    "systemCost": "System Cost",
+    "lowBudget": "Low Budget",
+    "mediumBudget": "Medium Budget",
+    "highBudget": "High Budget",
+    "annualSavings": "Annual Savings",
+    "paybackPeriod": "Payback Period",
+    "years": "years",
+    "recommendations": "Recommendations",
+    "warnings": "Warnings",
+    "downloadReport": "Download PDF Report",
+    "startNew": "Start New Calculation"
+  },
+  "education": {
+    "title": "Learn About Rainwater Harvesting",
+    "subtitle": "Understand the science and benefits of rainwater harvesting"
+  },
+  "contractors": {
+    "title": "Find Contractors",
+    "subtitle": "Connect with certified rainwater harvesting professionals"
+  },
+  "testimonials": {
+    "title": "What Our Users Say",
+    "subtitle": "Real experiences from homeowners across India"
+  },
+  "about": {
+    "title": "Built for Indian Conditions",
+    "subtitle": "Our advanced calculations follow CGWB guidelines and incorporate real Indian rainfall patterns, ensuring accurate results for every region.",
+    "heading": "Scientific Methodology Meets Local Expertise",
+    "description": "Our tool combines Central Ground Water Board (CGWB) guidelines with region-specific rainfall data, soil characteristics, and groundwater conditions. Every calculation is tailored to Indian climate patterns, making it the most accurate rainwater harvesting assistant for Indian homes and communities.",
+    "features": {
+      "cgwbCompliant": "CGWB Compliant",
+      "scientificMethods": "Scientific Methods",
+      "locationSpecific": "Location Specific",
+      "communityFocused": "Community Focused"
+    },
+    "readMore": "Read More About Our Methodology",
+    "readLess": "Read Less"
+  },
+  "footer": {
+    "title": "Every Drop Counts. Start Saving Rainwater Today.",
+    "subtitle": "Join thousands of Indian homeowners who are already harvesting rainwater and contributing to water conservation. Calculate your potential now.",
+    "calculateButton": "Calculate My Rainwater Potential",
+    "designButton": "Design Recharge System",
+    "stats": {
+      "calculations": "Calculations Done",
+      "savings": "Water Savings",
+      "states": "States Covered",
+      "compliant": "CGWB Compliant"
+    },
+    "tagline": "Conserve water, save money, and secure your future",
+    "rights": "All rights reserved"
+  }
+}

@@ -1,4 +1,5 @@
 import { ArrowRight, Droplets } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
 interface FooterHeroSectionProps {
@@ -6,6 +7,7 @@ interface FooterHeroSectionProps {
 }
 
 export default function FooterHeroSection({ onSelectPath }: FooterHeroSectionProps) {
+  const { t } = useTranslation();
   return (
     <section className="py-24 bg-gradient-to-r from-primary via-chart-1 to-chart-2 text-white">
       <div className="container mx-auto px-4 text-center">
@@ -16,12 +18,11 @@ export default function FooterHeroSection({ onSelectPath }: FooterHeroSectionPro
           </div>
           
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            Every Drop Counts. Start Saving Rainwater Today.
+            {t('footer.title')}
           </h2>
           
           <p className="text-xl md:text-2xl mb-12 opacity-90 leading-relaxed">
-            Join thousands of Indian homeowners who are already harvesting rainwater 
-            and contributing to water conservation. Calculate your potential now.
+            {t('footer.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -31,7 +32,7 @@ export default function FooterHeroSection({ onSelectPath }: FooterHeroSectionPro
               className="px-8 py-6 text-lg font-semibold hover:scale-105 transition-transform bg-white text-primary hover:bg-white/90"
               onClick={() => onSelectPath('rainwater')}
             >
-              Calculate My Rainwater Potential
+              {t('footer.calculateButton')}
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
             
@@ -41,7 +42,7 @@ export default function FooterHeroSection({ onSelectPath }: FooterHeroSectionPro
               className="px-8 py-6 text-lg font-semibold hover:scale-105 transition-transform border-white text-white hover:bg-white/10"
               onClick={() => onSelectPath('recharge')}
             >
-              Design Recharge System
+              {t('footer.designButton')}
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </div>
@@ -51,19 +52,19 @@ export default function FooterHeroSection({ onSelectPath }: FooterHeroSectionPro
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
               <div>
                 <div className="text-3xl font-bold mb-2">5,000+</div>
-                <div className="text-white/80">Calculations Done</div>
+                <div className="text-white/80">{t('footer.stats.calculations')}</div>
               </div>
               <div>
                 <div className="text-3xl font-bold mb-2">₹2Cr+</div>
-                <div className="text-white/80">Water Savings</div>
+                <div className="text-white/80">{t('footer.stats.savings')}</div>
               </div>
               <div>
                 <div className="text-3xl font-bold mb-2">28</div>
-                <div className="text-white/80">States Covered</div>
+                <div className="text-white/80">{t('footer.stats.states')}</div>
               </div>
               <div>
                 <div className="text-3xl font-bold mb-2">100%</div>
-                <div className="text-white/80">CGWB Compliant</div>
+                <div className="text-white/80">{t('footer.stats.compliant')}</div>
               </div>
             </div>
           </div>
