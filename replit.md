@@ -2,6 +2,33 @@
 
 RTRWH/AR is a comprehensive rainwater harvesting and artificial recharge assistant web application designed specifically for Indian conditions. The application helps homeowners and communities calculate rainwater harvesting potential, design storage systems, assess artificial recharge feasibility, and analyze cost-benefit scenarios. It features a multi-step user journey from educational landing pages through data input forms to detailed technical results with downloadable PDF reports.
 
+# Replit Environment Setup (Completed)
+
+**Status**: ✅ Successfully configured and running
+
+**Database**: PostgreSQL database provisioned and schema deployed via `npm run db:push`
+
+**Workflow Configuration**:
+- Workflow name: "Start application"
+- Command: `npm run dev`
+- Port: 5000
+- Output type: webview
+- Status: Running successfully with HMR enabled
+
+**Deployment Configuration**:
+- Target: autoscale (stateless web application)
+- Build command: `npm run build`
+- Run command: `npm run start`
+
+**Environment Variables**:
+- DATABASE_URL, PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE (automatically configured)
+
+**Vite Configuration**:
+- Host: 0.0.0.0 (correctly configured for Replit proxy)
+- Port: 5000
+- HMR: WebSocket on port 443 with WSS protocol
+- Allowed hosts: true (enables Replit iframe proxy access)
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
