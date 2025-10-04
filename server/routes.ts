@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { calculationEngine } from "./utils/calculationEngine";
 import { userInputSchema, type UserInput, type CalculationResults } from "@shared/schema";
 import jsPDF from 'jspdf';
+import fs from 'fs';
+import path from 'path';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Calculation endpoint
@@ -210,6 +212,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('PDF generation error:', error);
       res.status(500).json({
         error: 'Failed to generate PDF report',
+        message: error.message
+      });
+    }
+  });
+
+  // Get cities data
+  app.get("/api/cities", (req, res) => {
+    try {
+      const citiesPath = path.resolve(import.meta.dirname, "data", "cities.json");
+      const citiesData = fs.readFileSync(citiesPath, "utf-8");
+      const cities = JSON.parse(citiesData);
+      res.json(cities);
+    } catch (error: any) {
+      console.error("Failed to read cities data:", error);
+      res.status(500).json({
+        error: "Failed to retrieve cities data",
         message: error.message
       });
     }
