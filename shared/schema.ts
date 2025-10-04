@@ -38,6 +38,30 @@ export const rechargeInputSchema = z.object({
   borewellCondition: z.enum(["Working", "Dead", "Partially-Dead"]).optional(),
   aquiferType: z.enum(["Alluvial", "Hard Rock", "Coastal", "Desert"]).optional(),
   budget: z.enum(["Low", "Medium", "High"])
+}).refine((data) => {
+  if (data.hasOpenSpace && (!data.openSpaceArea || data.openSpaceArea <= 0)) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Open space area is required when open space is available",
+  path: ["openSpaceArea"]
+}).refine((data) => {
+  if (data.hasBorewell && (!data.borewellDepth || data.borewellDepth <= 0)) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Borewell depth is required when borewell is present",
+  path: ["borewellDepth"]
+}).refine((data) => {
+  if (data.hasBorewell && !data.borewellCondition) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Borewell condition is required when borewell is present",
+  path: ["borewellCondition"]
 });
 
 // Combined input schema (for backwards compatibility and type union)
