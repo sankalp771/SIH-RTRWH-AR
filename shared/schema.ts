@@ -3,8 +3,8 @@ import { pgTable, text, varchar, integer, real, boolean, timestamp, jsonb } from
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// User Input Schema
-export const userInputSchema = z.object({
+// Rainwater Harvesting Input Schema
+export const rainwaterInputSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   location: z.string().min(2, "Location is required"),
   pincode: z.string().regex(/^\d{6}$/, "Valid 6-digit pincode required"),
@@ -21,31 +21,40 @@ export const userInputSchema = z.object({
   budget: z.enum(["Low", "Medium", "High"])
 });
 
-// Calculation Results Schema
-export const calculationResultsSchema = z.object({
-  // Rainwater Harvesting Calculations
+// Artificial Recharge Input Schema (for borewells and groundwater recharge)
+export const rechargeInputSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  location: z.string().min(2, "Location is required"),
+  pincode: z.string().regex(/^\d{6}$/, "Valid 6-digit pincode required"),
+  catchmentArea: z.number().min(1, "Catchment area must be greater than 0"),
+  catchmentType: z.enum(["Rooftop", "Terrace", "Paved", "Open Ground"]),
+  hasOpenSpace: z.boolean(),
+  openSpaceArea: z.number().min(1, "Open space area is required for recharge").optional(),
+  soilType: z.enum(["Sandy", "Loamy", "Clayey"]),
+  groundwaterDepth: z.number().min(0, "Groundwater depth must be positive"),
+  hasBorewell: z.boolean(),
+  borewellCount: z.number().min(0, "Borewell count cannot be negative").optional(),
+  borewellDepth: z.number().min(0, "Borewell depth must be positive").optional(),
+  borewellCondition: z.enum(["Working", "Dead", "Partially-Dead"]).optional(),
+  aquiferType: z.enum(["Alluvial", "Hard Rock", "Coastal", "Desert"]).optional(),
+  budget: z.enum(["Low", "Medium", "High"])
+});
+
+// Combined input schema (for backwards compatibility and type union)
+export const userInputSchema = z.union([rainwaterInputSchema, rechargeInputSchema]);
+
+// Rainwater Harvesting Results Schema
+export const rainwaterResultsSchema = z.object({
   rainwaterPotential: z.number(), // liters per year
   monthlyPotential: z.array(z.number()), // 12 months
   householdDemand: z.number(), // liters per year
   coveragePercentage: z.number(), // %
   firstFlush: z.number(), // liters
-  
-  // Storage & System
   tankCapacity: z.number(), // liters
   tankDimensions: z.object({
     diameter: z.number(), // meters
     height: z.number() // meters
   }),
-  
-  // Recharge Calculations (optional)
-  rechargeVolume: z.number().optional(), // cubic meters per year
-  pitDimensions: z.object({
-    length: z.number(),
-    width: z.number(),
-    depth: z.number()
-  }).optional(),
-  
-  // Cost Analysis
   systemCost: z.object({
     low: z.number(),
     medium: z.number(),
@@ -55,13 +64,51 @@ export const calculationResultsSchema = z.object({
   paybackPeriod: z.number(), // years
   lifeCycleCost: z.number(), // total lifecycle cost in rupees
   maintenanceCost: z.number(), // annual maintenance cost in rupees
-  
-  // Feasibility
   feasibilityScore: z.number(), // 0-100
   feasibilityLevel: z.enum(["High", "Medium", "Low"]),
   recommendations: z.array(z.string()),
   warnings: z.array(z.string())
 });
+
+// Artificial Recharge Results Schema
+export const rechargeResultsSchema = z.object({
+  rainwaterPotential: z.number(), // liters per year
+  monthlyPotential: z.array(z.number()), // 12 months
+  rechargeVolume: z.number(), // cubic meters per year
+  pitDimensions: z.object({
+    length: z.number(),
+    width: z.number(),
+    depth: z.number()
+  }).optional(),
+  trenchDimensions: z.object({
+    length: z.number(), // meters
+    width: z.number(), // meters
+    depth: z.number(), // meters
+    count: z.number() // number of trenches
+  }).optional(),
+  borewellRechargeCapacity: z.number().optional(), // liters per hour
+  borewellRejuvenation: z.object({
+    recommended: z.boolean(),
+    method: z.string(),
+    expectedImprovement: z.string()
+  }).optional(),
+  systemCost: z.object({
+    low: z.number(),
+    medium: z.number(),
+    high: z.number()
+  }),
+  groundwaterBenefit: z.number(), // cubic meters per year
+  paybackPeriod: z.number(), // years
+  lifeCycleCost: z.number(), // total lifecycle cost in rupees
+  maintenanceCost: z.number(), // annual maintenance cost in rupees
+  feasibilityScore: z.number(), // 0-100
+  feasibilityLevel: z.enum(["High", "Medium", "Low"]),
+  recommendations: z.array(z.string()),
+  warnings: z.array(z.string())
+});
+
+// Combined results schema (for backwards compatibility)
+export const calculationResultsSchema = z.union([rainwaterResultsSchema, rechargeResultsSchema]);
 
 // Database Tables (for optional persistence)
 export const userSubmissions = pgTable("user_submissions", {
@@ -156,7 +203,11 @@ export const coefficientsSchema = z.object({
 });
 
 // Type exports
+export type RainwaterInput = z.infer<typeof rainwaterInputSchema>;
+export type RechargeInput = z.infer<typeof rechargeInputSchema>;
 export type UserInput = z.infer<typeof userInputSchema>;
+export type RainwaterResults = z.infer<typeof rainwaterResultsSchema>;
+export type RechargeResults = z.infer<typeof rechargeResultsSchema>;
 export type CalculationResults = z.infer<typeof calculationResultsSchema>;
 export type CityData = z.infer<typeof cityDataSchema>;
 export type Coefficients = z.infer<typeof coefficientsSchema>;
