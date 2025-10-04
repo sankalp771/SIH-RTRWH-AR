@@ -1,4 +1,11 @@
-import { UserInput, CalculationResults, CityData, Coefficients } from '@shared/schema';
+import { 
+  RainwaterInput, 
+  RechargeInput, 
+  RainwaterResults, 
+  RechargeResults, 
+  CityData, 
+  Coefficients 
+} from '@shared/schema';
 import citiesData from '../data/cities.json';
 import coefficientsData from '../data/coefficients.json';
 import fs from 'fs';
@@ -14,9 +21,9 @@ const coefficients: Coefficients = coefficientsData as Coefficients;
  */
 export class CalculationEngine {
   /**
-   * Calculate water quality factor based on environmental conditions
+   * Calculate water quality factor based on environmental conditions (Rainwater only)
    */
-  private calculateQualityFactor(userInput: UserInput): number {
+  private calculateQualityFactor(userInput: RainwaterInput): number {
     const advancedFactors = coefficients.advancedFactors;
     let qualityFactor = advancedFactors.qualityFactors.environment[userInput.environment];
     
@@ -83,9 +90,9 @@ export class CalculationEngine {
   }
 
   /**
-   * Calculate filtration system cost based on water quality needs
+   * Calculate filtration system cost based on water quality needs (Rainwater only)
    */
-  private calculateFiltrationCost(userInput: UserInput): number {
+  private calculateFiltrationCost(userInput: RainwaterInput): number {
     let baseCost = 5000; // Basic filtration
     
     if (userInput.purpose === 'Domestic') {
@@ -104,9 +111,9 @@ export class CalculationEngine {
   }
 
   /**
-   * Calculate overall system efficiency
+   * Calculate overall system efficiency (Rainwater only)
    */
-  private calculateSystemEfficiency(userInput: UserInput, tankCapacity: number): number {
+  private calculateSystemEfficiency(userInput: RainwaterInput, tankCapacity: number): number {
     let efficiency = 0.85; // Base efficiency
     
     // Tank size efficiency curve
@@ -151,10 +158,10 @@ export class CalculationEngine {
   }
 
   /**
-   * Calculate Enhanced Rainwater Harvesting Potential
+   * Calculate Enhanced Rainwater Harvesting Potential (Rainwater)
    * Formula: RHP = Rainfall × Roof Area × Runoff Coefficient × Quality Factor × Seasonal Factor
    */
-  private calculateRainwaterPotential(userInput: UserInput, cityData: CityData): {
+  private calculateRainwaterPotential(userInput: RainwaterInput, cityData: CityData): {
     annual: number;
     monthly: number[];
   } {
@@ -188,10 +195,148 @@ export class CalculationEngine {
   }
 
   /**
-   * Calculate Enhanced Household Water Demand with Monthly Variation
+   * Calculate Recharge Potential (Artificial Recharge)
+   * Formula: RP = Rainfall × Catchment Area × Runoff Coefficient × Seasonal Factor
+   */
+  private calculateRechargePotential(userInput: RechargeInput, cityData: CityData): {
+    annual: number;
+    monthly: number[];
+  } {
+    // Runoff coefficient based on catchment type
+    const catchmentCoeff = {
+      'Rooftop': 0.85,
+      'Terrace': 0.90,
+      'Paved': 0.80,
+      'Open Ground': 0.20
+    };
+    
+    const runoffCoeff = catchmentCoeff[userInput.catchmentType];
+    const evaporationLoss = coefficients.advancedFactors.evaporationLoss[cityData.region];
+    
+    const monthlyPotential = cityData.monthlyRainfall.map((rainfall, index) => {
+      const season = this.getSeason(index);
+      const seasonalFactor = coefficients.advancedFactors.seasonalVariation[season as keyof typeof coefficients.advancedFactors.seasonalVariation];
+      
+      const rawPotential = userInput.catchmentArea * rainfall * runoffCoeff;
+      const adjustedPotential = rawPotential * seasonalFactor;
+      const finalPotential = adjustedPotential * (1 - evaporationLoss * 0.5); // Less evaporation loss for recharge
+      
+      return Math.round(finalPotential);
+    });
+    
+    const annualPotential = monthlyPotential.reduce((sum, month) => sum + month, 0);
+    
+    return {
+      annual: annualPotential,
+      monthly: monthlyPotential
+    };
+  }
+
+  /**
+   * Calculate Trench Dimensions for Artificial Recharge
+   */
+  private calculateTrenchDimensions(userInput: RechargeInput, rechargeVolume: number, cityData: CityData): {
+    length: number;
+    width: number;
+    depth: number;
+    count: number;
+  } | undefined {
+    if (!userInput.hasOpenSpace || !userInput.openSpaceArea) {
+      return undefined;
+    }
+
+    const infiltrationRate = coefficients.infiltrationRates[userInput.soilType]; // mm/hr
+    const openSpaceArea = userInput.openSpaceArea;
+    
+    // Trench specifications based on open space
+    const trenchWidth = 0.5; // meters (standard width)
+    const trenchDepth = Math.min(1.5, userInput.groundwaterDepth * 0.15); // Shallower than pits
+    
+    // Calculate required trench length based on infiltration capacity
+    const dailyInflowRate = (rechargeVolume * 1000) / 120; // L/day for rainy season
+    const infiltrationRateMs = infiltrationRate / 1000; // m/hr
+    const trenchArea = dailyInflowRate / (infiltrationRateMs * 8 * 1000); // m²
+    
+    const totalTrenchLength = trenchArea / trenchWidth;
+    
+    // Calculate number of trenches based on available space
+    const maxTrenchLength = Math.sqrt(openSpaceArea) * 0.8; // Maximum single trench length
+    const trenchCount = Math.ceil(totalTrenchLength / maxTrenchLength);
+    const actualTrenchLength = totalTrenchLength / trenchCount;
+    
+    return {
+      length: Number(actualTrenchLength.toFixed(1)),
+      width: trenchWidth,
+      depth: trenchDepth,
+      count: Math.max(1, trenchCount)
+    };
+  }
+
+  /**
+   * Calculate Borewell Rejuvenation Strategy
+   */
+  private calculateBorewellRejuvenation(userInput: RechargeInput, rechargeVolume: number): {
+    recommended: boolean;
+    method: string;
+    expectedImprovement: string;
+  } | undefined {
+    if (!userInput.hasBorewell || !userInput.borewellCondition) {
+      return undefined;
+    }
+
+    const condition = userInput.borewellCondition;
+    let recommended = false;
+    let method = '';
+    let expectedImprovement = '';
+
+    if (condition === 'Dead') {
+      recommended = true;
+      method = 'Direct recharge through borewell with filter media and sedimentation chamber';
+      expectedImprovement = '60-80% recovery possible with direct recharge. Expected yield: 2000-4000 LPH';
+    } else if (condition === 'Partially-Dead') {
+      recommended = true;
+      method = 'Recharge pit near borewell (5m distance) with gravel and sand filter layers';
+      expectedImprovement = '40-60% improvement in yield. Expected increase: 1500-3000 LPH';
+    } else {
+      recommended = true;
+      method = 'Preventive recharge pit to maintain borewell health and increase groundwater table';
+      expectedImprovement = '20-30% yield improvement and extended borewell life';
+    }
+
+    return {
+      recommended,
+      method,
+      expectedImprovement
+    };
+  }
+
+  /**
+   * Calculate Borewell Recharge Capacity
+   */
+  private calculateBorewellRechargeCapacity(userInput: RechargeInput, rechargeVolume: number): number | undefined {
+    if (!userInput.hasBorewell || !userInput.borewellDepth) {
+      return undefined;
+    }
+
+    // Recharge capacity depends on borewell depth and condition
+    const baseCapacity = 2000; // L/hr base capacity
+    const depthFactor = Math.min(1.5, userInput.borewellDepth / 30); // Deeper borewells = better recharge
+    
+    let conditionFactor = 1.0;
+    if (userInput.borewellCondition === 'Dead') {
+      conditionFactor = 0.6; // Lower capacity for dead borewells initially
+    } else if (userInput.borewellCondition === 'Partially-Dead') {
+      conditionFactor = 0.75;
+    }
+
+    return Math.round(baseCapacity * depthFactor * conditionFactor);
+  }
+
+  /**
+   * Calculate Enhanced Household Water Demand with Monthly Variation (Rainwater only)
    * Formula: Demand = Number of people × Daily consumption × Days in month × Purpose Factor × Monthly Seasonal Factor
    */
-  private calculateHouseholdDemand(userInput: UserInput): number {
+  private calculateHouseholdDemand(userInput: RainwaterInput): number {
     const dailyConsumption = coefficients.waterRates.domesticConsumption;
     
     // Adjust consumption based on purpose
@@ -266,23 +411,16 @@ export class CalculationEngine {
   }
 
   /**
-   * Calculate Recharge System (for artificial recharge)
+   * Calculate Recharge Pit Dimensions (for artificial recharge)
    */
-  private calculateRechargeSystem(userInput: UserInput, rainwaterPotential: number, cityData: CityData): {
-    rechargeVolume: number;
-    pitDimensions: { length: number; width: number; depth: number };
-  } {
+  private calculateRechargePit(userInput: RechargeInput, rainwaterPotential: number): {
+    length: number;
+    width: number;
+    depth: number;
+  } | undefined {
     const infiltrationRate = coefficients.infiltrationRates[userInput.soilType]; // mm/hr
     
-    // Recharge volume = 70-90% of rainwater potential (depending on soil type)
-    let rechargeFactor = 0.7; // Default for clayey soil
-    if (userInput.soilType === 'Sandy') rechargeFactor = 0.9;
-    if (userInput.soilType === 'Loamy') rechargeFactor = 0.8;
-    
-    const rechargeVolume = Math.round((rainwaterPotential / 1000) * rechargeFactor);
-    
     // Calculate pit dimensions based on infiltration rate and recharge volume
-    // Formula: Required pit area = Daily inflow / (Infiltration rate * Operating hours)
     const dailyInflowRate = rainwaterPotential / 120; // Assuming 120 rainy days per year (L/day)
     const operatingHours = 8; // Hours per day for infiltration
     const infiltrationRateMs = infiltrationRate / 1000; // Convert mm/hr to m/hr
@@ -293,40 +431,31 @@ export class CalculationEngine {
     // Pit depth based on groundwater depth and soil type
     const maxDepth = Math.min(4, Math.max(2, userInput.groundwaterDepth * 0.3));
     
-    // Adjust pit area if storage volume requires more space
-    const storageBasedArea = (rechargeVolume * 1.2) / maxDepth; // 20% extra for temporary storage
-    const requiredArea = Math.max(minPitArea, storageBasedArea);
-    
-    const pitSide = Math.ceil(Math.sqrt(requiredArea));
+    const pitSide = Math.ceil(Math.sqrt(minPitArea));
     
     return {
-      rechargeVolume,
-      pitDimensions: {
-        length: Math.max(pitSide, 3), // Minimum 3m
-        width: Math.max(pitSide, 3),
-        depth: maxDepth
-      }
+      length: Math.max(pitSide, 3), // Minimum 3m
+      width: Math.max(pitSide, 3),
+      depth: maxDepth
     };
   }
 
   /**
-   * Calculate Advanced System Costs with Lifecycle Analysis
+   * Calculate Rainwater Harvesting System Costs
    */
-  private calculateCosts(userInput: UserInput, rainwaterPotential: number, tankCapacity: number, hasRecharge: boolean): {
+  private calculateRainwaterCosts(userInput: RainwaterInput, rainwaterPotential: number, tankCapacity: number): {
     systemCost: { low: number; medium: number; high: number };
     annualSavings: number;
     paybackPeriod: number;
     lifeCycleCost: number;
     maintenanceCost: number;
   } {
-    // Enhanced cost calculation
     const baseCost = userInput.roofArea * coefficients.costFactors.baseCostPerSqm;
-    const tankCost = tankCapacity * (tankCapacity > 10000 ? 0.75 : 0.85); // Economies of scale
-    const rechargeCost = hasRecharge ? userInput.roofArea * 180 : 0; // Updated recharge cost
-    const pumpCost = tankCapacity > 5000 ? 8000 : 4500; // Pump system cost
+    const tankCost = tankCapacity * (tankCapacity > 10000 ? 0.75 : 0.85);
+    const pumpCost = tankCapacity > 5000 ? 8000 : 4500;
     const filtrationCost = this.calculateFiltrationCost(userInput);
     
-    const totalBaseCost = baseCost + tankCost + rechargeCost + pumpCost + filtrationCost;
+    const totalBaseCost = baseCost + tankCost + pumpCost + filtrationCost;
     
     const systemCost = {
       low: Math.round(totalBaseCost * coefficients.costFactors.budgetMultipliers.Low),
@@ -334,23 +463,18 @@ export class CalculationEngine {
       high: Math.round(totalBaseCost * coefficients.costFactors.budgetMultipliers.High)
     };
     
-    // Fixed savings calculation using actual rainwaterPotential
     const householdDemand = this.calculateHouseholdDemand(userInput);
     const municipalRate = coefficients.waterRates.municipalRate;
     const systemEfficiency = this.calculateSystemEfficiency(userInput, tankCapacity);
     const usableWater = Math.min(rainwaterPotential * systemEfficiency, householdDemand);
     
-    // Include water quality premium (RO water cost saving)
     const qualityPremium = userInput.purpose === 'Domestic' ? 0.015 : 0.005;
     const annualSavings = Math.round(usableWater * (municipalRate + qualityPremium));
     
-    // Lifecycle cost analysis
     const advancedFactors = coefficients.advancedFactors;
     const systemLife = advancedFactors.lifeCycleFactors.system_life;
     const annualMaintenance = systemCost.medium * advancedFactors.maintenanceCosts.annual;
-    const totalMaintenanceCost = annualMaintenance * systemLife;
-    const lifeCycleCost = systemCost.medium + totalMaintenanceCost;
-    
+    const lifeCycleCost = systemCost.medium + (annualMaintenance * systemLife);
     const paybackPeriod = Math.round(systemCost.medium / Math.max(annualSavings - annualMaintenance, 1));
     
     return {
@@ -363,147 +487,86 @@ export class CalculationEngine {
   }
 
   /**
-   * Calculate Feasibility Score and Generate Recommendations
+   * Calculate Artificial Recharge System Costs
    */
-  private calculateFeasibility(userInput: UserInput, cityData: CityData, rainwaterPotential: number, householdDemand: number): {
-    feasibilityScore: number;
-    feasibilityLevel: 'High' | 'Medium' | 'Low';
-    recommendations: string[];
-    warnings: string[];
+  private calculateRechargeCosts(userInput: RechargeInput, rechargeVolume: number): {
+    systemCost: { low: number; medium: number; high: number };
+    paybackPeriod: number;
+    lifeCycleCost: number;
+    maintenanceCost: number;
+    groundwaterBenefit: number;
   } {
-    let score = 50; // Base score
-    const recommendations: string[] = [];
-    const warnings: string[] = [];
+    // Recharge system cost calculation
+    const baseCost = userInput.catchmentArea * 250; // Cost per sqm for recharge setup
+    const pitCost = 45000; // Standard recharge pit cost
+    const trenchCost = userInput.hasOpenSpace && userInput.openSpaceArea ? userInput.openSpaceArea * 150 : 0;
+    const borewellRechargeCost = userInput.hasBorewell ? 35000 : 0; // Borewell recharge setup
     
-    // Rainfall adequacy (0-25 points)
-    if (cityData.annualRainfall > 1000) {
-      score += 25;
-      recommendations.push('Excellent rainfall - consider larger storage capacity');
-    } else if (cityData.annualRainfall > 600) {
-      score += 15;
-      recommendations.push('Good rainfall - standard system recommended');
-    } else {
-      score += 5;
-      warnings.push('Low rainfall area - consider supplementary water sources');
-    }
+    const totalBaseCost = baseCost + pitCost + trenchCost + borewellRechargeCost;
     
-    // Roof suitability (0-20 points)
-    if (userInput.roofType === 'RCC' || userInput.roofType === 'GI') {
-      score += 20;
-      recommendations.push(`${userInput.roofType} roof is excellent for rainwater harvesting`);
-    } else if (userInput.roofType === 'Tiles') {
-      score += 15;
-      recommendations.push('Clay/concrete tiles are suitable with proper first flush diverter');
-    } else {
-      score += 10;
-      warnings.push('Asbestos roofs require regular cleaning and filtration');
-    }
+    const systemCost = {
+      low: Math.round(totalBaseCost * coefficients.costFactors.budgetMultipliers.Low),
+      medium: Math.round(totalBaseCost * coefficients.costFactors.budgetMultipliers.Medium),
+      high: Math.round(totalBaseCost * coefficients.costFactors.budgetMultipliers.High)
+    };
     
-    // Soil conditions (0-15 points)
-    if (userInput.soilType === 'Sandy') {
-      score += 15;
-      recommendations.push('Sandy soil is ideal for groundwater recharge');
-    } else if (userInput.soilType === 'Loamy') {
-      score += 10;
-      recommendations.push('Loamy soil provides good infiltration for recharge');
-    } else {
-      score += 5;
-      recommendations.push('Clayey soil requires larger recharge structures');
-    }
+    // Environmental/community benefit (not direct monetary savings)
+    const groundwaterBenefit = rechargeVolume; // m³ per year
     
-    // Groundwater depth (0-15 points)
-    if (userInput.groundwaterDepth > 3 && userInput.groundwaterDepth < 30) {
-      score += 15;
-      recommendations.push('Optimal groundwater depth for recharge systems');
-    } else if (userInput.groundwaterDepth <= 3) {
-      score += 5;
-      warnings.push('Shallow groundwater - ensure proper drainage to prevent waterlogging');
-    } else {
-      score += 10;
-      warnings.push('Deep groundwater - recharge benefits may take longer to realize');
-    }
+    const advancedFactors = coefficients.advancedFactors;
+    const systemLife = advancedFactors.lifeCycleFactors.system_life;
+    const annualMaintenance = systemCost.medium * 0.03; // 3% annual maintenance for recharge
+    const lifeCycleCost = systemCost.medium + (annualMaintenance * systemLife);
     
-    // Coverage analysis (0-10 points)
-    const coverage = (rainwaterPotential / householdDemand) * 100;
-    if (coverage > 80) {
-      score += 10;
-      recommendations.push('Excellent coverage - consider selling excess water or larger recharge');
-    } else if (coverage > 50) {
-      score += 7;
-      recommendations.push('Good coverage - system will significantly reduce water bills');
-    } else {
-      score += 3;
-      recommendations.push('Partial coverage - combine with water conservation measures');
-    }
-    
-    // Environmental factors
-    if (userInput.birdNesting) {
-      warnings.push('Bird nesting detected - install mesh covers and regular cleaning required');
-    }
-    
-    if (userInput.environment === 'Industrial') {
-      warnings.push('Industrial area - test water quality regularly and use appropriate filtration');
-    }
-    
-    // Monsoon dependency check
-    const monsoonMonths = cityData.monthlyRainfall.slice(5, 9); // June to September
-    const monsoonRainfall = monsoonMonths.reduce((sum, month) => sum + month, 0);
-    if (monsoonRainfall / cityData.annualRainfall > 0.7) {
-      warnings.push('High monsoon dependency - 70%+ rainfall in 4 months');
-    }
-    
-    // Standard recommendations
-    recommendations.push('Install first flush diverter to improve water quality');
-    if (userInput.purpose === 'Domestic') {
-      recommendations.push('Consider UV/RO purification for drinking water use');
-    }
-    if (userInput.hasOpenSpace) {
-      recommendations.push('Connect overflow to recharge pit for maximum benefit');
-    }
-    
-    const feasibilityLevel = score >= 80 ? 'High' : score >= 60 ? 'Medium' : 'Low';
+    // Payback in terms of borewell sustainability (estimated value)
+    const borewellSavings = userInput.hasBorewell ? 12000 : 5000; // Annual value of sustained groundwater
+    const paybackPeriod = Math.round(systemCost.medium / Math.max(borewellSavings, 1));
     
     return {
-      feasibilityScore: Math.min(100, score),
-      feasibilityLevel,
-      recommendations,
-      warnings
+      systemCost,
+      paybackPeriod: Math.min(paybackPeriod, 30),
+      lifeCycleCost,
+      maintenanceCost: Math.round(annualMaintenance),
+      groundwaterBenefit
     };
   }
 
   /**
-   * Main calculation function
+   * Main calculation function - delegates to specific calculators
    */
-  public calculate(userInput: UserInput, calculationType: 'rainwater' | 'recharge'): CalculationResults {
-    // Find city data
+  public calculate(userInput: RainwaterInput | RechargeInput, calculationType: 'rainwater' | 'recharge'): RainwaterResults | RechargeResults {
+    if (calculationType === 'rainwater') {
+      return this.calculateRainwaterHarvesting(userInput as RainwaterInput);
+    } else {
+      return this.calculateArtificialRecharge(userInput as RechargeInput);
+    }
+  }
+
+  /**
+   * Calculate Rainwater Harvesting System
+   */
+  private calculateRainwaterHarvesting(userInput: RainwaterInput): RainwaterResults {
     const cityData = this.findCityData(userInput.location, userInput.pincode);
     if (!cityData) {
       throw new Error(`City data not found for ${userInput.location}, ${userInput.pincode}`);
     }
 
-    // Core calculations
     const { annual: rainwaterPotential, monthly: monthlyPotential } = this.calculateRainwaterPotential(userInput, cityData);
     const householdDemand = this.calculateHouseholdDemand(userInput);
     const coveragePercentage = Math.min(100, Math.round((rainwaterPotential / householdDemand) * 100));
-    const firstFlush = Math.round(userInput.roofArea * 2); // 2mm first flush
+    const firstFlush = Math.round(userInput.roofArea * 2);
     
-    // Storage system
     const { capacity: tankCapacity, dimensions: tankDimensions } = this.calculateStorageTank(
       rainwaterPotential, monthlyPotential, householdDemand, cityData
     );
     
-    // Cost analysis
-    const { systemCost, annualSavings, paybackPeriod, lifeCycleCost, maintenanceCost } = this.calculateCosts(
-      userInput, rainwaterPotential, tankCapacity, calculationType === 'recharge'
-    );
+    const { systemCost, annualSavings, paybackPeriod, lifeCycleCost, maintenanceCost } = 
+      this.calculateRainwaterCosts(userInput, rainwaterPotential, tankCapacity);
     
-    // Feasibility analysis
-    const { feasibilityScore, feasibilityLevel, recommendations, warnings } = this.calculateFeasibility(
-      userInput, cityData, rainwaterPotential, householdDemand
-    );
+    const { feasibilityScore, feasibilityLevel, recommendations, warnings } = 
+      this.calculateRainwaterFeasibility(userInput, cityData, rainwaterPotential, householdDemand);
     
-    // Base results
-    const results: CalculationResults = {
+    return {
       rainwaterPotential,
       monthlyPotential,
       householdDemand,
@@ -521,17 +584,172 @@ export class CalculationEngine {
       recommendations,
       warnings
     };
+  }
+
+  /**
+   * Calculate Artificial Recharge System
+   */
+  private calculateArtificialRecharge(userInput: RechargeInput): RechargeResults {
+    const cityData = this.findCityData(userInput.location, userInput.pincode);
+    if (!cityData) {
+      throw new Error(`City data not found for ${userInput.location}, ${userInput.pincode}`);
+    }
+
+    const { annual: rainwaterPotential, monthly: monthlyPotential } = this.calculateRechargePotential(userInput, cityData);
     
-    // Add recharge calculations if needed
-    if (calculationType === 'recharge') {
-      const { rechargeVolume, pitDimensions } = this.calculateRechargeSystem(
-        userInput, rainwaterPotential, cityData
-      );
-      results.rechargeVolume = rechargeVolume;
-      results.pitDimensions = pitDimensions;
+    const rechargeFactor = userInput.soilType === 'Sandy' ? 0.9 : userInput.soilType === 'Loamy' ? 0.8 : 0.7;
+    const rechargeVolume = Math.round((rainwaterPotential / 1000) * rechargeFactor);
+    
+    const pitDimensions = this.calculateRechargePit(userInput, rainwaterPotential);
+    const trenchDimensions = this.calculateTrenchDimensions(userInput, rechargeVolume, cityData);
+    const borewellRejuvenation = this.calculateBorewellRejuvenation(userInput, rechargeVolume);
+    const borewellRechargeCapacity = this.calculateBorewellRechargeCapacity(userInput, rechargeVolume);
+    
+    const { systemCost, paybackPeriod, lifeCycleCost, maintenanceCost, groundwaterBenefit } = 
+      this.calculateRechargeCosts(userInput, rechargeVolume);
+    
+    const { feasibilityScore, feasibilityLevel, recommendations, warnings } = 
+      this.calculateRechargeFeasibility(userInput, cityData, rechargeVolume);
+    
+    return {
+      rainwaterPotential,
+      monthlyPotential,
+      rechargeVolume,
+      pitDimensions,
+      trenchDimensions,
+      borewellRechargeCapacity,
+      borewellRejuvenation,
+      systemCost,
+      groundwaterBenefit,
+      paybackPeriod,
+      lifeCycleCost,
+      maintenanceCost,
+      feasibilityScore,
+      feasibilityLevel,
+      recommendations,
+      warnings
+    };
+  }
+
+  /**
+   * Calculate Rainwater Harvesting Feasibility
+   */
+  private calculateRainwaterFeasibility(userInput: RainwaterInput, cityData: CityData, rainwaterPotential: number, householdDemand: number): {
+    feasibilityScore: number;
+    feasibilityLevel: 'High' | 'Medium' | 'Low';
+    recommendations: string[];
+    warnings: string[];
+  } {
+    let score = 50;
+    const recommendations: string[] = [];
+    const warnings: string[] = [];
+    
+    if (cityData.annualRainfall > 1000) {
+      score += 25;
+      recommendations.push('Excellent rainfall - consider larger storage capacity');
+    } else if (cityData.annualRainfall > 600) {
+      score += 15;
+    } else {
+      score += 5;
+      warnings.push('Low rainfall area - consider supplementary water sources');
     }
     
-    return results;
+    if (userInput.roofType === 'RCC' || userInput.roofType === 'GI') {
+      score += 20;
+      recommendations.push(`${userInput.roofType} roof is excellent for rainwater harvesting`);
+    } else {
+      score += 10;
+      warnings.push('Regular roof cleaning and maintenance required');
+    }
+    
+    const coverage = (rainwaterPotential / householdDemand) * 100;
+    if (coverage > 80) {
+      score += 10;
+      recommendations.push('Excellent coverage - system will meet most water needs');
+    } else if (coverage > 50) {
+      score += 7;
+    } else {
+      score += 3;
+      recommendations.push('Partial coverage - combine with water conservation');
+    }
+    
+    recommendations.push('Install first flush diverter for water quality');
+    if (userInput.purpose === 'Domestic') {
+      recommendations.push('Consider UV/RO purification for drinking water');
+    }
+    
+    const feasibilityLevel = score >= 80 ? 'High' : score >= 60 ? 'Medium' : 'Low';
+    return { feasibilityScore: Math.min(100, score), feasibilityLevel, recommendations, warnings };
+  }
+
+  /**
+   * Calculate Artificial Recharge Feasibility
+   */
+  private calculateRechargeFeasibility(userInput: RechargeInput, cityData: CityData, rechargeVolume: number): {
+    feasibilityScore: number;
+    feasibilityLevel: 'High' | 'Medium' | 'Low';
+    recommendations: string[];
+    warnings: string[];
+  } {
+    let score = 50;
+    const recommendations: string[] = [];
+    const warnings: string[] = [];
+    
+    if (cityData.annualRainfall > 1000) {
+      score += 20;
+      recommendations.push('Excellent rainfall - high recharge potential');
+    } else if (cityData.annualRainfall > 600) {
+      score += 12;
+    } else {
+      score += 5;
+      warnings.push('Moderate rainfall - recharge benefits will be seasonal');
+    }
+    
+    if (userInput.soilType === 'Sandy') {
+      score += 25;
+      recommendations.push('Sandy soil is ideal for rapid groundwater recharge');
+    } else if (userInput.soilType === 'Loamy') {
+      score += 18;
+      recommendations.push('Loamy soil provides good infiltration rates');
+    } else {
+      score += 10;
+      recommendations.push('Clayey soil requires larger recharge structures for effectiveness');
+      warnings.push('Slow infiltration - ensure proper pit/trench dimensions');
+    }
+    
+    if (userInput.groundwaterDepth > 3 && userInput.groundwaterDepth < 30) {
+      score += 15;
+      recommendations.push('Optimal groundwater depth for recharge systems');
+    } else if (userInput.groundwaterDepth <= 3) {
+      score += 5;
+      warnings.push('Shallow groundwater - monitor for waterlogging');
+    } else {
+      score += 10;
+      warnings.push('Deep groundwater - recharge benefits may take time');
+    }
+    
+    if (userInput.hasBorewell && userInput.borewellCondition === 'Dead') {
+      recommendations.push('Direct borewell recharge recommended for rejuvenation');
+      recommendations.push('Install filter chamber before borewell to prevent clogging');
+      score += 10;
+    } else if (userInput.hasBorewell && userInput.borewellCondition === 'Partially-Dead') {
+      recommendations.push('Recharge pit near borewell will improve yield significantly');
+      score += 8;
+    }
+    
+    if (userInput.hasOpenSpace && userInput.openSpaceArea) {
+      recommendations.push(`Construct ${Math.ceil(userInput.openSpaceArea / 20)} percolation trenches for distributed recharge`);
+      recommendations.push('Trenches should be 0.5m wide, 1-1.5m deep, filled with gravel and sand layers');
+      score += 10;
+    } else {
+      warnings.push('Limited open space - recharge options restricted to pits only');
+    }
+    
+    recommendations.push('Regular maintenance: clean recharge structures before monsoon');
+    recommendations.push('Monitor groundwater level changes annually to assess effectiveness');
+    
+    const feasibilityLevel = score >= 80 ? 'High' : score >= 60 ? 'Medium' : 'Low';
+    return { feasibilityScore: Math.min(100, score), feasibilityLevel, recommendations, warnings };
   }
 }
 
