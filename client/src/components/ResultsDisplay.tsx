@@ -43,7 +43,7 @@ interface CalculationResults {
     medium: number;
     high: number;
   };
-  annualSavings: number; // rupees
+  annualSavings?: number; // rupees (only for rainwater)
   paybackPeriod: number; // years
   
   // Feasibility
@@ -243,16 +243,18 @@ export default function ResultsDisplay({ type, results, userInputs, onBack, onDo
               </div>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Annual Water Bill Savings</p>
-                <p className="text-2xl font-semibold text-green-600" data-testid="text-annual-savings">
-                  ₹{results.annualSavings.toLocaleString('en-IN')}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Based on municipal water rates
-                </p>
-              </div>
+            <div className={`grid ${type === 'rainwater' ? 'md:grid-cols-2' : 'md:grid-cols-1'} gap-6`}>
+              {type === 'rainwater' && results.annualSavings !== undefined && (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">Annual Water Bill Savings</p>
+                  <p className="text-2xl font-semibold text-green-600" data-testid="text-annual-savings">
+                    ₹{results.annualSavings.toLocaleString('en-IN')}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Based on municipal water rates
+                  </p>
+                </div>
+              )}
               
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Payback Period</p>
