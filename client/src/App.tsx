@@ -124,100 +124,170 @@ function App() {
 
   // TODO: remove mock functionality - replace with actual backend integration
   const generateMockResults = (data: any, type: 'rainwater' | 'recharge') => {
-    const runoffCoefficients = {
-      'RCC': 0.85,
-      'GI': 0.90,
-      'Asbestos': 0.80,
-      'Tiles': 0.75
-    };
-    
     // Mock rainfall data (mm per month) - Chennai example
     const monthlyRainfall = [24, 8, 15, 28, 42, 85, 120, 115, 68, 32, 18, 14];
     const annualRainfall = monthlyRainfall.reduce((sum, month) => sum + month, 0);
     
-    const runoffCoeff = runoffCoefficients[data.roofType as keyof typeof runoffCoefficients] || 0.8;
-    const rainwaterPotential = Math.round(data.roofArea * annualRainfall * runoffCoeff);
-    const monthlyPotential = monthlyRainfall.map(rain => Math.round(data.roofArea * rain * runoffCoeff));
+    let rainwaterPotential: number;
+    let monthlyPotential: number[];
+    let area: number;
     
-    const householdDemand = data.dwellers * 135 * 365; // 135L per person per day
-    const coveragePercentage = Math.min(100, Math.round((rainwaterPotential / householdDemand) * 100));
-    
-    const tankCapacity = Math.round(rainwaterPotential * 0.2); // 20% of annual potential
-    const tankVolume = tankCapacity / 1000; // cubic meters
-    const tankDiameter = Math.sqrt((tankVolume * 4) / (Math.PI * 2)); // assuming 2m height
-    
-    const baseCost = data.roofArea * 300; // ₹300 per sq meter base cost
-    const budgetMultiplier = data.budget === 'Low' ? 0.7 : data.budget === 'High' ? 1.5 : 1.0;
-    
-    const systemCost = {
-      low: Math.round(baseCost * 0.7),
-      medium: Math.round(baseCost * budgetMultiplier),
-      high: Math.round(baseCost * 1.5)
-    };
-    
-    const annualSavings = Math.round(rainwaterPotential * 0.04); // ₹0.04 per liter saved
-    const paybackPeriod = Math.round(systemCost.medium / annualSavings);
-    
-    let feasibilityScore = 70;
-    if (data.roofType === 'RCC' || data.roofType === 'GI') feasibilityScore += 10;
-    if (data.soilType === 'Sandy') feasibilityScore += 15;
-    else if (data.soilType === 'Loamy') feasibilityScore += 10;
-    if (data.groundwaterDepth > 3 && data.groundwaterDepth < 20) feasibilityScore += 10;
-    if (annualRainfall > 600) feasibilityScore += 15;
-    
-    const feasibilityLevel = feasibilityScore >= 80 ? 'High' : feasibilityScore >= 60 ? 'Medium' : 'Low';
-    
-    const recommendations = [
-      'Install first flush diverter to improve water quality',
-      `Use ${data.roofType} roof runoff coefficient of ${runoffCoeff} for calculations`,
-      data.purpose === 'Domestic' ? 'Consider UV sterilization for drinking water use' : 'Regular filtration recommended',
-      data.hasOpenSpace ? 'Install overflow system connected to recharge pit' : 'Consider connecting overflow to stormwater system'
-    ];
-    
-    const warnings = [];
-    if (data.birdNesting) warnings.push('Bird nesting area detected - regular cleaning required');
-    if (annualRainfall < 400) warnings.push('Low rainfall area - consider supplementary water sources');
-    if (monthlyRainfall.slice(5, 9).reduce((sum, month) => sum + month, 0) / annualRainfall > 0.7) {
-      warnings.push('Monsoon dependency - 70% collection in 4 months');
-    }
-    
-    const results = {
-      rainwaterPotential,
-      monthlyPotential,
-      householdDemand,
-      coveragePercentage,
-      firstFlush: Math.round(data.roofArea * 2), // 2mm first flush
-      tankCapacity,
-      tankDimensions: {
-        diameter: Number(tankDiameter.toFixed(1)),
-        height: 2.0
-      },
-      systemCost,
-      annualSavings,
-      paybackPeriod,
-      feasibilityScore,
-      feasibilityLevel,
-      recommendations,
-      warnings
-    };
-    
-    if (type === 'recharge') {
+    if (type === 'rainwater') {
+      const runoffCoefficients = {
+        'RCC': 0.85,
+        'GI': 0.90,
+        'Asbestos': 0.80,
+        'Tiles': 0.75
+      };
+      
+      const runoffCoeff = runoffCoefficients[data.roofType as keyof typeof runoffCoefficients] || 0.8;
+      area = data.roofArea || 0;
+      rainwaterPotential = Math.round(area * annualRainfall * runoffCoeff);
+      monthlyPotential = monthlyRainfall.map(rain => Math.round(area * rain * runoffCoeff));
+      
+      const householdDemand = (data.dwellers || 1) * 135 * 365; // 135L per person per day
+      const coveragePercentage = Math.min(100, Math.round((rainwaterPotential / householdDemand) * 100));
+      
+      const tankCapacity = Math.round(rainwaterPotential * 0.2); // 20% of annual potential
+      const tankVolume = tankCapacity / 1000; // cubic meters
+      const tankDiameter = Math.sqrt((tankVolume * 4) / (Math.PI * 2)); // assuming 2m height
+      
+      const baseCost = area * 300; // ₹300 per sq meter base cost
+      const budgetMultiplier = data.budget === 'Low' ? 0.7 : data.budget === 'High' ? 1.5 : 1.0;
+      
+      const systemCost = {
+        low: Math.round(baseCost * 0.7),
+        medium: Math.round(baseCost * budgetMultiplier),
+        high: Math.round(baseCost * 1.5)
+      };
+      
+      const annualSavings = Math.round(rainwaterPotential * 0.04); // ₹0.04 per liter saved
+      const paybackPeriod = Math.round(systemCost.medium / Math.max(annualSavings, 1));
+      
+      let feasibilityScore = 70;
+      if (data.roofType === 'RCC' || data.roofType === 'GI') feasibilityScore += 10;
+      if (data.soilType === 'Sandy') feasibilityScore += 15;
+      else if (data.soilType === 'Loamy') feasibilityScore += 10;
+      if (data.groundwaterDepth > 3 && data.groundwaterDepth < 20) feasibilityScore += 10;
+      if (annualRainfall > 600) feasibilityScore += 15;
+      
+      const feasibilityLevel = feasibilityScore >= 80 ? 'High' : feasibilityScore >= 60 ? 'Medium' : 'Low';
+      
+      const recommendations = [
+        'Install first flush diverter to improve water quality',
+        `Use ${data.roofType} roof runoff coefficient of ${runoffCoeff} for calculations`,
+        data.purpose === 'Domestic' ? 'Consider UV sterilization for drinking water use' : 'Regular filtration recommended',
+        data.hasOpenSpace ? 'Install overflow system connected to recharge pit' : 'Consider connecting overflow to stormwater system'
+      ];
+      
+      const warnings = [];
+      if (data.birdNesting) warnings.push('Bird nesting area detected - regular cleaning required');
+      if (annualRainfall < 400) warnings.push('Low rainfall area - consider supplementary water sources');
+      if (monthlyRainfall.slice(5, 9).reduce((sum, month) => sum + month, 0) / annualRainfall > 0.7) {
+        warnings.push('Monsoon dependency - 70% collection in 4 months');
+      }
+      
+      return {
+        rainwaterPotential,
+        monthlyPotential,
+        householdDemand,
+        coveragePercentage,
+        firstFlush: Math.round(area * 2), // 2mm first flush
+        tankCapacity,
+        tankDimensions: {
+          diameter: Number(tankDiameter.toFixed(1)),
+          height: 2.0
+        },
+        systemCost,
+        annualSavings,
+        paybackPeriod,
+        lifeCycleCost: systemCost.medium * 1.5,
+        maintenanceCost: Math.round(systemCost.medium * 0.03),
+        feasibilityScore,
+        feasibilityLevel,
+        recommendations,
+        warnings
+      };
+    } else {
+      // Recharge type
+      const catchmentCoefficients = {
+        'Rooftop': 0.85,
+        'Terrace': 0.90,
+        'Paved': 0.80,
+        'Open Ground': 0.20
+      };
+      
+      const runoffCoeff = catchmentCoefficients[data.catchmentType as keyof typeof catchmentCoefficients] || 0.75;
+      area = data.catchmentArea || 0;
+      rainwaterPotential = Math.round(area * annualRainfall * runoffCoeff);
+      monthlyPotential = monthlyRainfall.map(rain => Math.round(area * rain * runoffCoeff));
+      
       const infiltrationRates = { 'Sandy': 100, 'Loamy': 25, 'Clayey': 5 }; // mm/hr
-      const infiltrationRate = infiltrationRates[data.soilType as keyof typeof infiltrationRates];
-      const rechargeVolume = Math.round((rainwaterPotential / 1000) * 0.8); // 80% infiltration efficiency
+      const infiltrationRate = infiltrationRates[data.soilType as keyof typeof infiltrationRates] || 25;
+      const rechargeVolume = Math.round((rainwaterPotential / 1000) * 0.8); // 80% infiltration efficiency in m³
       
       const pitArea = Math.max(9, rechargeVolume / 2); // minimum 3x3m pit
       const pitLength = Math.ceil(Math.sqrt(pitArea));
       
-      (results as any).rechargeVolume = rechargeVolume;
-      (results as any).pitDimensions = {
-        length: pitLength,
-        width: pitLength,
-        depth: Math.max(2, Math.min(4, data.groundwaterDepth * 0.3)) // 30% of groundwater depth, max 4m
+      const baseCost = area * 250 + 45000; // ₹250 per sqm + pit cost
+      const budgetMultiplier = data.budget === 'Low' ? 0.7 : data.budget === 'High' ? 1.5 : 1.0;
+      
+      const systemCost = {
+        low: Math.round(baseCost * 0.7),
+        medium: Math.round(baseCost * budgetMultiplier),
+        high: Math.round(baseCost * 1.5)
+      };
+      
+      const borewellSavings = data.hasBorewell ? 12000 : 5000;
+      const paybackPeriod = Math.round(systemCost.medium / Math.max(borewellSavings, 1));
+      
+      let feasibilityScore = 70;
+      if (data.soilType === 'Sandy') feasibilityScore += 20;
+      else if (data.soilType === 'Loamy') feasibilityScore += 15;
+      if (data.groundwaterDepth > 3 && data.groundwaterDepth < 30) feasibilityScore += 15;
+      if (annualRainfall > 600) feasibilityScore += 15;
+      if (data.hasBorewell) feasibilityScore += 10;
+      
+      const feasibilityLevel = feasibilityScore >= 80 ? 'High' : feasibilityScore >= 60 ? 'Medium' : 'Low';
+      
+      const recommendations = [
+        'Install recharge pit with proper filter layers (gravel, sand, charcoal)',
+        `${data.soilType} soil infiltration rate: ${infiltrationRate} mm/hr`,
+        data.hasBorewell ? 'Consider direct borewell recharge for better results' : 'Recharge pit will improve local groundwater table',
+        data.hasOpenSpace ? 'Construct percolation trenches in open space for distributed recharge' : 'Maximize recharge pit dimensions within available space'
+      ];
+      
+      const warnings = [];
+      if (annualRainfall < 400) warnings.push('Low rainfall area - recharge benefits will be limited');
+      if (data.soilType === 'Clayey') warnings.push('Clayey soil has slow infiltration - larger recharge structures needed');
+      if (data.groundwaterDepth < 3) warnings.push('Shallow groundwater - monitor for waterlogging');
+      
+      return {
+        rainwaterPotential,
+        monthlyPotential,
+        rechargeVolume,
+        pitDimensions: {
+          length: pitLength,
+          width: pitLength,
+          depth: Math.max(2, Math.min(4, (data.groundwaterDepth || 10) * 0.3)) // 30% of groundwater depth, max 4m
+        },
+        borewellRechargeCapacity: data.hasBorewell ? 2500 : undefined,
+        borewellRejuvenation: data.hasBorewell && data.borewellCondition ? {
+          recommended: true,
+          method: data.borewellCondition === 'Dead' ? 'Direct recharge through borewell' : 'Recharge pit near borewell',
+          expectedImprovement: data.borewellCondition === 'Dead' ? '60-80% recovery possible' : '40-60% yield improvement'
+        } : undefined,
+        systemCost,
+        groundwaterBenefit: rechargeVolume,
+        paybackPeriod,
+        lifeCycleCost: systemCost.medium * 1.4,
+        maintenanceCost: Math.round(systemCost.medium * 0.03),
+        feasibilityScore,
+        feasibilityLevel,
+        recommendations,
+        warnings
       };
     }
-    
-    return results;
   };
 
   // TODO: integrate with proper PDF library and real data
