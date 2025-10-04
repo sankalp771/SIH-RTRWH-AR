@@ -12,6 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
 import { MapPin, Home, Users, DollarSign, Calculator } from "lucide-react";
 import { handleBackNavigation } from "@/lib/navigation";
+import LocationMap from "./LocationMap";
+import { useQuery } from "@tanstack/react-query";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -50,6 +52,11 @@ interface UserInputFormProps {
 
 export default function UserInputForm({ type, onSubmit, onBack }: UserInputFormProps) {
   const [hasOpenSpace, setHasOpenSpace] = useState(false);
+  const [selectedCity, setSelectedCity] = useState<string>("");
+  
+  const { data: citiesData } = useQuery<Array<{ city: string; state: string; pincode: string }>>({ 
+    queryKey: ["/api/cities"]
+  });
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -70,6 +77,15 @@ export default function UserInputForm({ type, onSubmit, onBack }: UserInputFormP
       budget: undefined
     }
   });
+
+  const handleLocationSelect = (city: string) => {
+    const cityData = citiesData?.find(c => c.city === city);
+    if (cityData) {
+      setSelectedCity(city);
+      form.setValue("location", cityData.city);
+      form.setValue("pincode", cityData.pincode);
+    }
+  };
 
   const handleSubmit = (data: FormData) => {
     console.log('Form submitted:', data);
@@ -103,46 +119,60 @@ export default function UserInputForm({ type, onSubmit, onBack }: UserInputFormP
               <MapPin className="w-5 h-5 text-primary" />
               <h3 className="text-xl font-medium">Personal & Location Details</h3>
             </div>
-            <div className="grid md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your name" {...field} data-testid="input-name" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>City/Location</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter city name" {...field} data-testid="input-location" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="pincode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>PIN Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="6-digit PIN code" {...field} data-testid="input-pincode" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your name" {...field} data-testid="input-name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City/Location</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter city name" {...field} data-testid="input-location" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="pincode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>PIN Code</FormLabel>
+                      <FormControl>
+                        <Input placeholder="6-digit PIN code" {...field} data-testid="input-pincode" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <div>
+                <Label className="mb-2 block">Select Location on Map</Label>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Click on a city marker to auto-fill location and PIN code
+                </p>
+                <LocationMap 
+                  onLocationSelect={handleLocationSelect} 
+                  selectedCity={selectedCity}
+                  height="350px"
+                />
+              </div>
             </div>
           </Card>
 
