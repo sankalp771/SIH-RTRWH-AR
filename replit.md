@@ -33,6 +33,7 @@ Preferred communication style: Simple, everyday language.
 - Multi-step form flow: Landing → Calculator Type Selection → Input Form → Results
 - Reusable UI primitives from Shadcn/ui (buttons, cards, forms, dialogs, progress indicators)
 - Accessibility-first design with ARIA labels and keyboard navigation
+- Interactive map component using Leaflet and OpenStreetMap for location selection with auto-fill functionality
 
 ## Backend Architecture
 
@@ -46,6 +47,7 @@ Preferred communication style: Simple, everyday language.
 - RESTful endpoints with clear separation of concerns
 - POST `/api/calculate` - Main calculation endpoint accepting user inputs and calculation type
 - POST `/api/download-pdf` - PDF report generation endpoint
+- GET `/api/cities` - Returns static city data with rainfall patterns and geographic information
 - JSON request/response format with Zod validation
 - Comprehensive error handling with appropriate HTTP status codes
 
@@ -162,6 +164,8 @@ Preferred communication style: Simple, everyday language.
 - **react-hook-form** - Form state management with performance optimization
 - **zod** - Runtime type validation and schema definition
 - **wouter** - Lightweight client-side routing
+- **react-leaflet** v4.2.1 - React components for Leaflet maps
+- **leaflet** - Interactive map library for location visualization and selection
 
 ## UI Component Libraries
 - **@radix-ui/* packages** - Accessible component primitives (dialogs, dropdowns, popovers, etc.)
