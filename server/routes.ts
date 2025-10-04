@@ -2,7 +2,14 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { calculationEngine } from "./utils/calculationEngine";
-import { userInputSchema, type UserInput, type CalculationResults } from "@shared/schema";
+import { 
+  rainwaterInputSchema, 
+  rechargeInputSchema,
+  type RainwaterInput, 
+  type RechargeInput,
+  type RainwaterResults,
+  type RechargeResults
+} from "@shared/schema";
 import jsPDF from 'jspdf';
 import fs from 'fs';
 import path from 'path';
@@ -13,11 +20,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userInputs, calculationType } = req.body;
       
-      // Validate input data
-      const validatedInputs = userInputSchema.parse(userInputs);
-      
       if (!['rainwater', 'recharge'].includes(calculationType)) {
         return res.status(400).json({ error: 'Invalid calculation type' });
+      }
+      
+      // Validate input data based on calculation type
+      let validatedInputs: RainwaterInput | RechargeInput;
+      if (calculationType === 'rainwater') {
+        validatedInputs = rainwaterInputSchema.parse(userInputs);
+      } else {
+        validatedInputs = rechargeInputSchema.parse(userInputs);
       }
       
       // Perform calculations
@@ -62,8 +74,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         success: true,
         submissions: submissions.map(sub => {
-          const userInputs = sub.userInputs as UserInput;
-          const results = sub.results as CalculationResults;
+          const userInputs = sub.userInputs as (RainwaterInput | RechargeInput);
+          const results = sub.results as (RainwaterResults | RechargeResults);
           return {
             id: sub.id,
             calculationType: sub.calculationType,
@@ -71,7 +83,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             name: userInputs.name,
             createdAt: sub.createdAt,
             feasibilityLevel: results.feasibilityLevel,
-            coveragePercentage: results.coveragePercentage
+            coveragePercentage: sub.calculationType === 'rainwater' ? (results as RainwaterResults).coveragePercentage : undefined
           };
         })
       });
@@ -120,8 +132,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Type cast the stored data
-      const userData = submission.userInputs as UserInput;
-      const results = submission.results as CalculationResults;
+      const userData = submission.userInputs as (RainwaterInput | RechargeInput);
+      const results = submission.results as (RainwaterResults | RechargeResults);
       const type = submission.calculationType;
       
       // Generate PDF using jsPDF
@@ -142,24 +154,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       doc.text('Key Results:', 20, 95);
       
       doc.setFontSize(10);
-      const resultText = [
-        `Roof Area: ${userData.roofArea} m² (${userData.roofType})`,
-        `Annual Rainwater Potential: ${results.rainwaterPotential.toLocaleString('en-IN')} L`,
-        `Household Demand: ${results.householdDemand.toLocaleString('en-IN')} L`,
-        `Coverage: ${results.coveragePercentage}%`,
-        `Recommended Tank Capacity: ${results.tankCapacity.toLocaleString('en-IN')} L`,
-        `Tank Dimensions: ${results.tankDimensions.diameter}m × ${results.tankDimensions.height}m`,
-        `System Cost (Medium): ₹${results.systemCost.medium.toLocaleString('en-IN')}`,
-        `Annual Savings: ₹${results.annualSavings.toLocaleString('en-IN')}`,
-        `Payback Period: ${results.paybackPeriod} years`,
-        `Feasibility: ${results.feasibilityLevel} (${results.feasibilityScore}/100)`
-      ];
+      let resultText: string[] = [];
       
-      if (type === 'recharge' && results.rechargeVolume && results.pitDimensions) {
-        resultText.push(
-          `Annual Recharge Volume: ${results.rechargeVolume} m³`,
-          `Pit Dimensions: ${results.pitDimensions.length}×${results.pitDimensions.width}×${results.pitDimensions.depth}m`
-        );
+      if (type === 'rainwater') {
+        const rainwaterData = userData as RainwaterInput;
+        const rainwaterResults = results as RainwaterResults;
+        resultText = [
+          `Roof Area: ${rainwaterData.roofArea} m² (${rainwaterData.roofType})`,
+          `Annual Rainwater Potential: ${rainwaterResults.rainwaterPotential.toLocaleString('en-IN')} L`,
+          `Household Demand: ${rainwaterResults.householdDemand.toLocaleString('en-IN')} L`,
+          `Coverage: ${rainwaterResults.coveragePercentage}%`,
+          `Recommended Tank Capacity: ${rainwaterResults.tankCapacity.toLocaleString('en-IN')} L`,
+          `Tank Dimensions: ${rainwaterResults.tankDimensions.diameter}m × ${rainwaterResults.tankDimensions.height}m`,
+          `System Cost (Medium): ₹${rainwaterResults.systemCost.medium.toLocaleString('en-IN')}`,
+          `Annual Savings: ₹${rainwaterResults.annualSavings.toLocaleString('en-IN')}`,
+          `Payback Period: ${rainwaterResults.paybackPeriod} years`,
+          `Feasibility: ${rainwaterResults.feasibilityLevel} (${rainwaterResults.feasibilityScore}/100)`
+        ];
+      } else {
+        const rechargeData = userData as RechargeInput;
+        const rechargeResults = results as RechargeResults;
+        resultText = [
+          `Catchment Area: ${rechargeData.catchmentArea} m²`,
+          `Annual Rainwater Potential: ${rechargeResults.rainwaterPotential.toLocaleString('en-IN')} L`,
+          `Annual Recharge Volume: ${rechargeResults.rechargeVolume} m³`,
+          `System Cost (Medium): ₹${rechargeResults.systemCost.medium.toLocaleString('en-IN')}`,
+          `Groundwater Benefit: ${rechargeResults.groundwaterBenefit} m³/year`,
+          `Payback Period: ${rechargeResults.paybackPeriod} years`,
+          `Feasibility: ${rechargeResults.feasibilityLevel} (${rechargeResults.feasibilityScore}/100)`
+        ];
+        
+        if (rechargeResults.pitDimensions) {
+          resultText.push(
+            `Pit Dimensions: ${rechargeResults.pitDimensions.length}×${rechargeResults.pitDimensions.width}×${rechargeResults.pitDimensions.depth}m`
+          );
+        }
+        
+        if (rechargeData.hasBorewell) {
+          resultText.push(`Borewell Recharging: Yes (${rechargeData.borewellCondition})`);
+        }
       }
       
       resultText.forEach((text, index) => {
