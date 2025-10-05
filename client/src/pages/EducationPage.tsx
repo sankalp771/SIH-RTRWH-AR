@@ -1,6 +1,67 @@
-import { BookOpen, Droplets, Sprout, Home, CloudRain, Lightbulb } from "lucide-react";
+import { BookOpen, Droplets, Sprout, Home, CloudRain, Lightbulb, Video, Play } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
+
+const educationalVideos = [
+  { id: "qu6IOO9RVoc", title: "Rainwater Harvesting Basics" },
+  { id: "yAthfvAiwRI", title: "Installation Guide" },
+  { id: "BJQ8JOqofOE", title: "System Design" },
+  { id: "LZd2XXTjlaI", title: "Maintenance Tips" },
+  { id: "KZqhPrlrU7o", title: "Water Quality" },
+  { id: "GXKpZFNIdIg", title: "Government Guidelines" },
+  { id: "ujfMVUjAwvM", title: "Cost Benefits" },
+  { id: "ziGqTmW76Uc", title: "Case Studies" },
+  { id: "zBG1zcZ1n1o", title: "Advanced Techniques" },
+];
+
+function VideoPlayer({ videoId, title }: { videoId: string; title: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <div 
+          className="group relative cursor-pointer overflow-hidden rounded-lg border bg-card hover:shadow-lg transition-all"
+          data-testid={`video-thumbnail-${videoId}`}
+        >
+          <div className="relative aspect-video bg-muted">
+            <img
+              src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+              <div className="bg-primary rounded-full p-4 group-hover:scale-110 transition-transform">
+                <Play className="w-8 h-8 text-primary-foreground" fill="currentColor" />
+              </div>
+            </div>
+          </div>
+          <div className="p-3">
+            <p className="font-medium text-sm line-clamp-2">{title}</p>
+          </div>
+        </div>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl p-0 bg-black">
+        <div className="relative aspect-video">
+          <iframe
+            key={isOpen ? "open" : "closed"}
+            width="100%"
+            height="100%"
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&modestbranding=1&rel=0`}
+            title={title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            className="w-full h-full"
+            data-testid={`video-player-${videoId}`}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function EducationPage() {
   return (
@@ -235,6 +296,25 @@ export default function EducationPage() {
                       <li>• Update calculations</li>
                     </ul>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Video className="w-5 h-5 text-red-500" />
+                  Educational Videos
+                </CardTitle>
+                <CardDescription>
+                  Watch informative videos to learn more about rainwater harvesting
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {educationalVideos.map((video) => (
+                    <VideoPlayer key={video.id} videoId={video.id} title={video.title} />
+                  ))}
                 </div>
               </CardContent>
             </Card>
