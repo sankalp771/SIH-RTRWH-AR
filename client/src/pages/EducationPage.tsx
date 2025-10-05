@@ -67,7 +67,7 @@ export default function EducationPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-4">
               <BookOpen className="w-8 h-8 text-primary" />
@@ -78,14 +78,16 @@ export default function EducationPage() {
             </p>
           </div>
 
-          <div className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Droplets className="w-5 h-5 text-blue-500" />
-                  What is Rainwater Harvesting?
-                </CardTitle>
-              </CardHeader>
+          <div className="grid lg:grid-cols-[1fr,400px] gap-8">
+            {/* Left Column - Educational Content */}
+            <div className="space-y-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Droplets className="w-5 h-5 text-blue-500" />
+                    What is Rainwater Harvesting?
+                  </CardTitle>
+                </CardHeader>
               <CardContent className="space-y-4">
                 <p>
                   Rainwater harvesting is the collection and storage of rainwater for reuse on-site, 
@@ -300,24 +302,29 @@ export default function EducationPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Video className="w-5 h-5 text-red-500" />
-                  Educational Videos
-                </CardTitle>
-                <CardDescription>
-                  Watch informative videos to learn more about rainwater harvesting
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {educationalVideos.map((video) => (
-                    <VideoPlayer key={video.id} videoId={video.id} title={video.title} />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            </div>
+
+            {/* Right Column - Videos */}
+            <div className="lg:sticky lg:top-4 h-fit">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Video className="w-5 h-5 text-red-500" />
+                    Educational Videos
+                  </CardTitle>
+                  <CardDescription>
+                    Watch informative videos to learn more about rainwater harvesting
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {educationalVideos.map((video) => (
+                      <VideoPlayer key={video.id} videoId={video.id} title={video.title} />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
