@@ -69,7 +69,7 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-2 md:left-8 top-[40%] -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-slate-800 p-3 md:p-4 rounded-full backdrop-blur-sm transition-all shadow-xl hover:scale-110"
+        className="absolute left-2 md:left-8 top-[40%] -translate-y-1/2 z-20 text-white hover:text-white/80 p-3 md:p-4 transition-all hover:scale-110"
         data-testid="button-prev-slide"
         aria-label="Previous slide"
       >
@@ -78,7 +78,7 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
       
       <button
         onClick={nextSlide}
-        className="absolute right-2 md:right-8 top-[40%] -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-slate-800 p-3 md:p-4 rounded-full backdrop-blur-sm transition-all shadow-xl hover:scale-110"
+        className="absolute right-2 md:right-8 top-[40%] -translate-y-1/2 z-20 text-white hover:text-white/80 p-3 md:p-4 transition-all hover:scale-110"
         data-testid="button-next-slide"
         aria-label="Next slide"
       >
