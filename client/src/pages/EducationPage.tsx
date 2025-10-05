@@ -1,4 +1,4 @@
-import { BookOpen, Droplets, Sprout, Home, CloudRain, Lightbulb, Video, Play } from "lucide-react";
+import { BookOpen, Droplets, Sprout, Home, CloudRain, Lightbulb, Video, Play, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -43,7 +43,15 @@ function VideoPlayer({ videoId, title }: { videoId: string; title: string }) {
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl p-0 bg-black">
+      <DialogContent className="max-w-4xl p-0 bg-black border-0" hideCloseButton>
+        <button
+          onClick={() => setIsOpen(false)}
+          className="absolute right-4 top-4 z-50 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-black/50 p-2 hover:bg-black/70"
+          data-testid="button-close-video"
+        >
+          <X className="h-6 w-6 text-white" />
+          <span className="sr-only">Close Video</span>
+        </button>
         <div className="relative aspect-video">
           <iframe
             key={isOpen ? "open" : "closed"}
