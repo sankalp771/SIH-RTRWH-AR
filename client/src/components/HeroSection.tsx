@@ -1,9 +1,12 @@
-import { ArrowRight, Droplets, Sprout, BarChart3, IndianRupee, MapPin } from "lucide-react";
+import { ArrowRight, Droplets, Sprout, BarChart3, IndianRupee, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { scrollToSection, type CalculationType } from "@/lib/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import bgImage1 from "@assets/stock_images/rainwater_harvesting_435c6f06.jpg";
+import bgImage2 from "@assets/stock_images/rainwater_harvesting_c4413935.jpg";
+import bgImage3 from "@assets/stock_images/rainwater_harvesting_ef0ec67a.jpg";
 
 interface HeroSectionProps {
   onSelectPath: (path: CalculationType) => void;
@@ -13,17 +16,17 @@ const slides = [
   {
     title: "Smart Rainwater Harvesting for Every Indian Home",
     subtitle: "Government-compliant, data-driven, and simple to use.",
-    bgClass: "bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800"
+    bgImage: bgImage1
   },
   {
     title: "Save Water, Save Money, Save Future",
     subtitle: "Calculate your rainwater potential and start conserving today.",
-    bgClass: "bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900"
+    bgImage: bgImage2
   },
   {
     title: "Scientific Water Management Solutions",
     subtitle: "Based on CGWB guidelines and Indian rainfall data.",
-    bgClass: "bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900"
+    bgImage: bgImage3
   }
 ];
 
@@ -31,30 +34,55 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
   const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
   
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 500);
-    
-    return () => clearInterval(interval);
-  }, []);
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+  
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
   
   const handlePathSelect = (path: CalculationType) => {
-    console.log(`Selected path: ${path}`);
     onSelectPath(path);
   };
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Slideshow Background */}
+      {/* Slideshow Background Images */}
       {slides.map((slide, index) => (
         <div
           key={index}
-          className={`absolute inset-0 z-0 transition-opacity duration-500 ${slide.bgClass} ${
+          className={`absolute inset-0 z-0 transition-opacity duration-500 ${
             currentSlide === index ? 'opacity-100' : 'opacity-0'
           }`}
-        />
+        >
+          <img 
+            src={slide.bgImage} 
+            alt={`Slide ${index + 1}`}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
       ))}
+      
+      {/* Navigation Arrows */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-2 md:left-8 top-[40%] -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-slate-800 p-3 md:p-4 rounded-full backdrop-blur-sm transition-all shadow-xl hover:scale-110"
+        data-testid="button-prev-slide"
+        aria-label="Previous slide"
+      >
+        <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
+      </button>
+      
+      <button
+        onClick={nextSlide}
+        className="absolute right-2 md:right-8 top-[40%] -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-slate-800 p-3 md:p-4 rounded-full backdrop-blur-sm transition-all shadow-xl hover:scale-110"
+        data-testid="button-next-slide"
+        aria-label="Next slide"
+      >
+        <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
+      </button>
       
       <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
         {/* Enhanced Hero Content */}
