@@ -47,6 +47,7 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
   };
 
   return (
+    <>
     <section id="hero" className="relative min-h-[120vh] flex items-center overflow-hidden">
       {/* Slideshow Background Images */}
       {slides.map((slide, index) => (
@@ -149,39 +150,41 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
             </div>
           </Card>
         </div>
+      </div>
+    </section>
 
-        {/* Quick Product Info Section */}
-        <div id="calculator" className="mt-16 pt-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Smart Solutions for Water Conservation</h2>
-            <p className="text-lg text-muted-foreground">Comprehensive tools for modern rainwater management</p>
-          </div>
+    {/* Smart Solutions Section with White Background */}
+    <section id="calculator" className="py-16 bg-background">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Smart Solutions for Water Conservation</h2>
+          <p className="text-lg text-muted-foreground">Comprehensive tools for modern rainwater management</p>
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+          <Card className="p-6 text-center hover-elevate transition-all duration-300 group">
+            <div className="w-16 h-16 bg-chart-1 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+              <BarChart3 className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold mb-3">📊 Rainwater Potential</h3>
+            <p className="text-muted-foreground">Know how much rainwater you can capture annually with precise calculations based on your location and roof specifications.</p>
+          </Card>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
-            <Card className="p-6 text-center hover-elevate transition-all duration-300 group">
-              <div className="w-16 h-16 bg-chart-1 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <BarChart3 className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">📊 Rainwater Potential</h3>
-              <p className="text-muted-foreground">Know how much rainwater you can capture annually with precise calculations based on your location and roof specifications.</p>
-            </Card>
-            
-            <Card className="p-6 text-center hover-elevate transition-all duration-300 group">
-              <div className="w-16 h-16 bg-chart-2 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <Droplets className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">💧 Artificial Recharge</h3>
-              <p className="text-muted-foreground">Design recharge pits and evaluate feasibility with scientific methodology and soil-specific infiltration rates.</p>
-            </Card>
-            
-            <Card className="p-6 text-center hover-elevate transition-all duration-300 group">
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <IndianRupee className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">💰 Cost & Savings</h3>
-              <p className="text-muted-foreground">Get budget options with detailed ROI analysis and payback period calculations for informed decision making.</p>
-            </Card>
-          </div>
+          <Card className="p-6 text-center hover-elevate transition-all duration-300 group">
+            <div className="w-16 h-16 bg-chart-2 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+              <Droplets className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold mb-3">💧 Artificial Recharge</h3>
+            <p className="text-muted-foreground">Design recharge pits and evaluate feasibility with scientific methodology and soil-specific infiltration rates.</p>
+          </Card>
+          
+          <Card className="p-6 text-center hover-elevate transition-all duration-300 group">
+            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+              <IndianRupee className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold mb-3">💰 Cost & Savings</h3>
+            <p className="text-muted-foreground">Get budget options with detailed ROI analysis and payback period calculations for informed decision making.</p>
+          </Card>
         </div>
 
         {/* Trust Indicators */}
@@ -195,5 +198,6 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
         </div>
       </div>
     </section>
+    </>
   );
 }
