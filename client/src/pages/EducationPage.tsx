@@ -44,26 +44,30 @@ function VideoPlayer({ videoId, title }: { videoId: string; title: string }) {
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-4xl p-0 bg-black border-0" hideCloseButton>
-        <button
-          onClick={() => setIsOpen(false)}
-          className="absolute right-4 top-4 z-50 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-black/50 p-2 hover:bg-black/70"
-          data-testid="button-close-video"
-        >
-          <X className="h-6 w-6 text-white" />
-          <span className="sr-only">Close Video</span>
-        </button>
         <div className="relative aspect-video">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="absolute -right-12 top-0 z-[100] rounded-full opacity-90 transition-opacity hover:opacity-100 focus:outline-none bg-white text-black p-2 hover:bg-gray-200"
+            data-testid="button-close-video"
+          >
+            <X className="h-6 w-6" />
+            <span className="sr-only">Close Video</span>
+          </button>
           <iframe
             key={isOpen ? "open" : "closed"}
             width="100%"
             height="100%"
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&modestbranding=1&rel=0`}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1&modestbranding=1&rel=0&fs=1`}
             title={title}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
-            className="w-full h-full"
+            className="w-full h-full pointer-events-auto"
             data-testid={`video-player-${videoId}`}
+            style={{
+              position: 'relative',
+              zIndex: 1
+            }}
           />
         </div>
       </DialogContent>
