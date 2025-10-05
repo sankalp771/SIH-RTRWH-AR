@@ -3,32 +3,67 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { scrollToSection, type CalculationType } from "@/lib/navigation";
+import { useState, useEffect } from "react";
 
 interface HeroSectionProps {
   onSelectPath: (path: CalculationType) => void;
 }
 
+const slides = [
+  {
+    title: "Smart Rainwater Harvesting for Every Indian Home",
+    subtitle: "Government-compliant, data-driven, and simple to use.",
+    bgClass: "bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800"
+  },
+  {
+    title: "Save Water, Save Money, Save Future",
+    subtitle: "Calculate your rainwater potential and start conserving today.",
+    bgClass: "bg-gradient-to-br from-emerald-900 via-teal-900 to-slate-900"
+  },
+  {
+    title: "Scientific Water Management Solutions",
+    subtitle: "Based on CGWB guidelines and Indian rainfall data.",
+    bgClass: "bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900"
+  }
+];
+
 export default function HeroSection({ onSelectPath }: HeroSectionProps) {
   const { t } = useTranslation();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 500);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
   const handlePathSelect = (path: CalculationType) => {
     console.log(`Selected path: ${path}`);
     onSelectPath(path);
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center">
-      {/* Enhanced Hero Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-chart-1/10 to-chart-2/15 -z-10" />
-      <div className="absolute inset-0 opacity-20 bg-pattern -z-10" />
+    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Slideshow Background */}
+      {slides.map((slide, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 z-0 transition-opacity duration-500 ${slide.bgClass} ${
+            currentSlide === index ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+      ))}
       
-      <div className="container mx-auto px-4 py-16 md:py-24">
+      <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
         {/* Enhanced Hero Content */}
         <div className="text-center max-w-5xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-chart-1 to-chart-2 bg-clip-text text-transparent leading-tight">
-            {t('hero.title')}
+          <h1 className="text-4xl md:text-7xl font-bold mb-6 text-white leading-tight transition-opacity duration-500">
+            {slides[currentSlide].title}
           </h1>
-          <p className="text-xl md:text-3xl text-muted-foreground mb-12 leading-relaxed font-medium">
-            {t('hero.subtitle')}
+          <p className="text-xl md:text-3xl text-white/90 mb-12 leading-relaxed font-medium transition-opacity duration-500">
+            {slides[currentSlide].subtitle}
           </p>
           
           {/* Hero CTAs */}
