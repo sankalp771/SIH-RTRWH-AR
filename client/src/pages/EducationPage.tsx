@@ -306,7 +306,7 @@ export default function EducationPage() {
 
             {/* Right Column - Videos */}
             <div className="lg:sticky lg:top-4 h-fit">
-              <Card>
+              <Card className="overflow-hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Video className="w-5 h-5 text-red-500" />
@@ -316,8 +316,8 @@ export default function EducationPage() {
                     Watch informative videos to learn more about rainwater harvesting
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+                <CardContent className="max-h-[calc(100vh-200px)] overflow-y-auto">
+                  <div className="space-y-4 pr-2">
                     {educationalVideos.map((video) => (
                       <VideoPlayer key={video.id} videoId={video.id} title={video.title} />
                     ))}
