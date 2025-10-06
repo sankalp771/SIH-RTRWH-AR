@@ -24,10 +24,8 @@ const slides = [
   {
     title: "",
     titleParts: [
-      { text: "Save Water", color: "text-blue-500" },
-      { text: ", ", color: "text-white" },
-      { text: "Save Money", color: "text-green-500" },
-      { text: ", ", color: "text-white" },
+      { text: "Save Water, ", color: "text-blue-500" },
+      { text: "Save Money, ", color: "text-green-500" },
       { text: "Save Future", color: "text-white" }
     ],
     subtitle: "Calculate your rainwater potential and start conserving today.",
