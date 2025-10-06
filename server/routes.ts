@@ -141,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Header
       doc.setFontSize(20);
-      doc.text('RTRWH/AR Analysis Report', 20, 30);
+      doc.text('NeerSetu Analysis Report', 20, 30);
       
       doc.setFontSize(12);
       doc.text(`${type === 'rainwater' ? 'Rainwater Harvesting' : 'Artificial Recharge'} Analysis`, 20, 45);
@@ -271,7 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ 
       status: "ok", 
       timestamp: new Date().toISOString(),
-      service: "RTRWH/AR Calculation API"
+      service: "NeerSetu Calculation API"
     });
   });
 

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link, useLocation } from "wouter";
 import { scrollToSection, type SectionId } from "@/lib/navigation";
+import logoImage from "@assets/WhatsApp Image 2025-10-06 at 21.37.42_411d4470_1759771858236.jpg";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -52,11 +53,9 @@ export default function Header() {
         <nav className="flex items-center justify-between">
           <Link href="/" className="hover-elevate">
             <div className="flex items-center gap-2" data-testid="link-home">
-              <div className="p-2 bg-primary rounded-md">
-                <Droplets className="w-5 h-5 text-primary-foreground" />
-              </div>
+              <img src={logoImage} alt="NeerSetu Logo" className="w-10 h-10 object-contain" />
               <div>
-                <h1 className="font-semibold text-lg">{t('brand.name')}</h1>
+                <h1 className="font-semibold text-lg">NeerSetu</h1>
                 <p className="text-xs text-muted-foreground">{t('brand.tagline')}</p>
               </div>
             </div>
