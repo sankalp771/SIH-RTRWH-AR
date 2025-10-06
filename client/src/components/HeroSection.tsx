@@ -14,26 +14,26 @@ interface HeroSectionProps {
 
 const slides = [
   {
-    title: "The clock is ticking on ",
-    highlightText: "Global Warming",
-    highlightColor: "text-red-500",
-    subtitle: "Shape a greener tomorrow, ",
-    subtitleHighlight: "Plant Today",
-    subtitleColor: "text-green-500",
+    title: "Smart ",
+    highlightText: "Rainwater Harvesting",
+    highlightColor: "text-blue-500",
+    titleEnd: " for Every Indian Home",
+    subtitle: "Government-compliant, data-driven, and simple to use.",
     bgImage: bgImage1
   },
   {
-    title: "Join our ",
-    highlightText: "Mission Green",
+    title: "Save Water, Save Money, Save ",
+    highlightText: "Future",
     highlightColor: "text-green-500",
-    subtitle: "Smart Rainwater Harvesting for Every Indian Home",
+    subtitle: "Calculate your rainwater potential and start conserving today.",
     bgImage: bgImage2
   },
   {
-    title: "Reviving Water Today, ",
-    highlightText: "Rebuilding Tomorrow.",
+    title: "Scientific ",
+    highlightText: "Water Management",
     highlightColor: "text-blue-500",
-    subtitle: "Government-compliant, data-driven, and simple to use.",
+    titleEnd: " Solutions",
+    subtitle: "Based on CGWB guidelines and Indian rainfall data.",
     bgImage: bgImage3
   }
 ];
@@ -103,14 +103,10 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
                 {slides[currentSlide].highlightText}
               </span>
             )}
+            {slides[currentSlide].titleEnd}
           </h1>
           <p className="text-xl md:text-3xl text-white/90 leading-relaxed font-medium transition-opacity duration-500">
             {slides[currentSlide].subtitle}
-            {slides[currentSlide].subtitleHighlight && (
-              <span className={slides[currentSlide].subtitleColor}>
-                {slides[currentSlide].subtitleHighlight}
-              </span>
-            )}
           </p>
         </div>
       </div>
