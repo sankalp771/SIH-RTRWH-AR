@@ -14,18 +14,26 @@ interface HeroSectionProps {
 
 const slides = [
   {
-    title: "Smart Rainwater Harvesting for Every Indian Home",
-    subtitle: "Government-compliant, data-driven, and simple to use.",
+    title: "The clock is ticking on ",
+    highlightText: "Global Warming",
+    highlightColor: "text-red-500",
+    subtitle: "Shape a greener tomorrow, ",
+    subtitleHighlight: "Plant Today",
+    subtitleColor: "text-green-500",
     bgImage: bgImage1
   },
   {
-    title: "Save Water, Save Money, Save Future",
-    subtitle: "Calculate your rainwater potential and start conserving today.",
+    title: "Join our ",
+    highlightText: "Mission Green",
+    highlightColor: "text-green-500",
+    subtitle: "Smart Rainwater Harvesting for Every Indian Home",
     bgImage: bgImage2
   },
   {
-    title: "Scientific Water Management Solutions",
-    subtitle: "Based on CGWB guidelines and Indian rainfall data.",
+    title: "Reviving Water Today, ",
+    highlightText: "Rebuilding Tomorrow.",
+    highlightColor: "text-blue-500",
+    subtitle: "Government-compliant, data-driven, and simple to use.",
     bgImage: bgImage3
   }
 ];
@@ -90,9 +98,19 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
         <div className="text-center max-w-5xl mx-auto">
           <h1 className="text-4xl md:text-7xl font-bold mb-6 text-white leading-tight transition-opacity duration-500">
             {slides[currentSlide].title}
+            {slides[currentSlide].highlightText && (
+              <span className={slides[currentSlide].highlightColor}>
+                {slides[currentSlide].highlightText}
+              </span>
+            )}
           </h1>
           <p className="text-xl md:text-3xl text-white/90 leading-relaxed font-medium transition-opacity duration-500">
             {slides[currentSlide].subtitle}
+            {slides[currentSlide].subtitleHighlight && (
+              <span className={slides[currentSlide].subtitleColor}>
+                {slides[currentSlide].subtitleHighlight}
+              </span>
+            )}
           </p>
         </div>
       </div>
