@@ -59,7 +59,7 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
 
   return (
     <>
-    <section id="hero" className="relative min-h-[100vh] flex items-center overflow-hidden">
+    <section id="hero" className="relative min-h-[90vh] flex items-center overflow-hidden">
       {/* Slideshow Background Images */}
       {slides.map((slide, index) => (
         <div
