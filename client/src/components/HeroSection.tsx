@@ -22,9 +22,14 @@ const slides = [
     bgImage: bgImage1
   },
   {
-    title: "Save Water, Save Money, Save ",
-    highlightText: "Future",
-    highlightColor: "text-green-500",
+    title: "",
+    titleParts: [
+      { text: "Save Water", color: "text-blue-500" },
+      { text: ", ", color: "text-white" },
+      { text: "Save Money", color: "text-green-500" },
+      { text: ", ", color: "text-white" },
+      { text: "Save Future", color: "text-white" }
+    ],
     subtitle: "Calculate your rainwater potential and start conserving today.",
     bgImage: bgImage2
   },
@@ -97,13 +102,23 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
         {/* Enhanced Hero Content */}
         <div className="text-center max-w-5xl mx-auto">
           <h1 className="text-4xl md:text-7xl font-bold mb-6 text-white leading-tight transition-opacity duration-500">
-            {slides[currentSlide].title}
-            {slides[currentSlide].highlightText && (
-              <span className={slides[currentSlide].highlightColor}>
-                {slides[currentSlide].highlightText}
-              </span>
+            {slides[currentSlide].titleParts ? (
+              slides[currentSlide].titleParts.map((part: any, index: number) => (
+                <span key={index} className={part.color}>
+                  {part.text}
+                </span>
+              ))
+            ) : (
+              <>
+                {slides[currentSlide].title}
+                {slides[currentSlide].highlightText && (
+                  <span className={slides[currentSlide].highlightColor}>
+                    {slides[currentSlide].highlightText}
+                  </span>
+                )}
+                {slides[currentSlide].titleEnd}
+              </>
             )}
-            {slides[currentSlide].titleEnd}
           </h1>
           <p className="text-xl md:text-3xl text-white/90 leading-relaxed font-medium transition-opacity duration-500">
             {slides[currentSlide].subtitle}
