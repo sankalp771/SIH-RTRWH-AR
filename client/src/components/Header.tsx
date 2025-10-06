@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link, useLocation } from "wouter";
 import { scrollToSection, type SectionId } from "@/lib/navigation";
-import logoImage from "@assets/WhatsApp Image 2025-10-06 at 21.37.42_411d4470_1759771858236.jpg";
+import logoImage from "@assets/image_1759772124947.png";
 
 export default function Header() {
   const { t, i18n } = useTranslation();
