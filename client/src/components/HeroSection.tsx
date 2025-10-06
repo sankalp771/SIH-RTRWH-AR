@@ -87,44 +87,28 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
       
       <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
         {/* Enhanced Hero Content */}
-        <div className="text-center max-w-5xl mx-auto mb-16">
+        <div className="text-center max-w-5xl mx-auto">
           <h1 className="text-4xl md:text-7xl font-bold mb-6 text-white leading-tight transition-opacity duration-500">
             {slides[currentSlide].title}
           </h1>
-          <p className="text-xl md:text-3xl text-white/90 mb-12 leading-relaxed font-medium transition-opacity duration-500">
+          <p className="text-xl md:text-3xl text-white/90 leading-relaxed font-medium transition-opacity duration-500">
             {slides[currentSlide].subtitle}
           </p>
-          
-          {/* Hero CTAs */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-            <Button
-              size="lg"
-              className="px-8 py-6 text-lg font-semibold hover:scale-105 transition-transform"
-              onClick={() => scrollToSection('calculator')}
-            >
-              {t('hero.startCalculator')}
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="px-8 py-6 text-lg font-semibold hover:scale-105 transition-transform"
-              onClick={() => scrollToSection('about')}
-            >
-              {t('hero.learnMore')}
-            </Button>
-          </div>
         </div>
+      </div>
+    </section>
 
-        {/* Path Selection Cards */}
+    {/* Path Selection Cards with White Background */}
+    <section className="py-16 bg-white dark:bg-white">
+      <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <Card className="p-8 hover-elevate cursor-pointer group transition-all duration-300" onClick={() => handlePathSelect('rainwater')} data-testid="card-rainwater">
+          <Card className="p-8 hover-elevate cursor-pointer group transition-all duration-300 bg-white dark:bg-white text-black dark:text-black" onClick={() => handlePathSelect('rainwater')} data-testid="card-rainwater">
             <div className="text-center">
               <div className="w-16 h-16 bg-chart-1 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Droplets className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4">{t('features.rainwaterTitle')}</h3>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
+              <h3 className="text-2xl font-semibold mb-4 text-black dark:text-black">{t('features.rainwaterTitle')}</h3>
+              <p className="text-gray-600 dark:text-gray-600 mb-6 leading-relaxed">
                 {t('features.rainwaterDesc')}
               </p>
               <Button className="w-full group-hover:bg-chart-1" size="lg" data-testid="button-rainwater">
@@ -134,13 +118,13 @@ export default function HeroSection({ onSelectPath }: HeroSectionProps) {
             </div>
           </Card>
 
-          <Card className="p-8 hover-elevate cursor-pointer group transition-all duration-300" onClick={() => handlePathSelect('recharge')} data-testid="card-recharge">
+          <Card className="p-8 hover-elevate cursor-pointer group transition-all duration-300 bg-white dark:bg-white text-black dark:text-black" onClick={() => handlePathSelect('recharge')} data-testid="card-recharge">
             <div className="text-center">
               <div className="w-16 h-16 bg-chart-2 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                 <Sprout className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4">{t('features.rechargeTitle')}</h3>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
+              <h3 className="text-2xl font-semibold mb-4 text-black dark:text-black">{t('features.rechargeTitle')}</h3>
+              <p className="text-gray-600 dark:text-gray-600 mb-6 leading-relaxed">
                 {t('features.rechargeDesc')}
               </p>
               <Button className="w-full group-hover:bg-chart-2" size="lg" data-testid="button-recharge">
