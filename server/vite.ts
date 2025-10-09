@@ -26,7 +26,7 @@ export async function setupVite(app: Express, server: Server) {
   };
 
   // Dynamically import vite config only in development
-  const { default: viteConfig } = await import("../vite.config");
+  const { default: viteConfig } = await import("../client/vite.config.ts");
 
   const vite = await createViteServer({
     ...viteConfig,
