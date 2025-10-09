@@ -18,5 +18,8 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, "..", "dist"),
     emptyOutDir: true,
+    rollupOptions: {
+      external: ['drizzle-orm', 'drizzle-zod']  // Backend packages ko exclude karo
+    }
   },
 });
