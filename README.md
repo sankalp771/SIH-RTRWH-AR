@@ -8,6 +8,25 @@ The application features a multi-step user journey: landing page education, calc
 
 Preferred communication style: Simple, everyday language.
 
+## 🧩 Installation Guide
+
+Welcome to **CodeGraphContext**! This guide provides a clear and seamless path to installing and configuring the tool, from prerequisites to launching your server.
+### 1. Install npm
+
+Run this command in root directory:
+
+```bash
+npm install
+```
+
+### 2. Run the Development Server
+
+Launch it in local device :
+
+```bash
+npm run dev
+```
+
 # System Architecture
 
 ## Frontend Architecture
